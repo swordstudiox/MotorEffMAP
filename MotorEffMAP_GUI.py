@@ -1069,7 +1069,7 @@ class MainWindow(QMainWindow):
             logging.error(f"保存图像失败: {e}")
 
 class SignatureWidget(QWidget):
-    def __init__(self, author="hehongjian", data="2026-01-15"):
+    def __init__(self, author="sword", data="2026-01-15"):
         super().__init__()
         # 透明背景，右下锚点
         self.layout = QHBoxLayout(self)
@@ -1110,3 +1110,4 @@ if __name__ == "__main__":
     window = MainWindow()
     window.show()
     sys.exit(app.exec())
+
