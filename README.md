@@ -226,17 +226,19 @@ python build_script.py
 
 构建脚本会：
 
-1. 检查并安装 `pyinstaller`。
-2. 检查并安装 `pillow`。
-3. 将 `图标.png` 转成 `MotorEffMAP.ico`。
-4. 清理旧的 `build/` 和 `dist/`。
+1. 强制使用项目虚拟环境 `venv\Scripts\python.exe`。
+2. 检查并安装 `pyinstaller`。
+3. 直接使用已有 `MotorEffMAP.ico`，不再转换图标。
+4. 清理旧的 `build/`、`dist/` 和 `MotorEffMAP.spec`。
 5. 使用 PyInstaller 打包。
-6. 复制 `MotorEffMAP.ini` 到发布目录。
+6. 根据 `version.ini` 将发布目录命名为 `MotorEffMAP_日期-版本号`。
+7. 复制 `MotorEffMAP.ini`、`version.ini` 和 `MotorEffMAP.ico` 到发布目录。
+8. 清理当前程序不用的 Qt 资源并检查构建产物完整性。
 
 构建完成后，可执行文件目录为：
 
 ```text
-dist/MotorEffMAP/
+dist/MotorEffMAP_20260611-V1.2/
 ```
 
 进入该目录双击 `MotorEffMAP.exe` 即可运行。

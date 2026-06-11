@@ -48,18 +48,51 @@
     }
     main { padding: 28px 52px 60px; }
     nav {
-      padding: 18px 22px;
-      background: var(--soft);
+      padding: 24px 28px;
+      background: #ffffff;
       border: 1px solid var(--line);
       border-radius: 8px;
+      box-shadow: 0 1px 4px rgba(31, 41, 51, 0.06);
       margin-bottom: 28px;
+      counter-reset: toc;
+    }
+    .toc-title {
+      margin: 0 0 14px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid var(--line);
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--ink);
+    }
+    .toc-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 4px 18px;
     }
     nav a {
-      display: inline-block;
-      margin: 4px 12px 4px 0;
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      min-height: 32px;
+      padding: 6px 10px;
       color: var(--blue);
       text-decoration: none;
       font-size: 14px;
+      border-left: 3px solid transparent;
+      border-radius: 4px;
+      counter-increment: toc;
+    }
+    nav a::before {
+      content: counter(toc) ".";
+      min-width: 24px;
+      color: var(--muted);
+      font-weight: 700;
+      text-align: right;
+    }
+    nav a:hover {
+      background: #eff6ff;
+      border-left-color: var(--blue);
+      color: #1d4ed8;
     }
     h2 {
       margin-top: 34px;
@@ -81,10 +114,11 @@
       font-size: 0.94em;
     }
     pre {
-      background: #111827;
-      color: #e5e7eb;
+      background: #f8fafc;
+      color: #334155;
       padding: 16px;
       border-radius: 8px;
+      border: 1px solid #dbe3ec;
       overflow: auto;
       line-height: 1.5;
     }
@@ -118,6 +152,32 @@
       margin: 14px 0;
       color: #1e3a8a;
     }
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+      margin: 16px 0 24px;
+    }
+    .card {
+      border: 1px solid var(--line);
+      background: #fbfcfe;
+      border-radius: 8px;
+      padding: 12px 14px;
+    }
+    .card strong {
+      display: block;
+      margin-bottom: 6px;
+    }
+    .formula {
+      border: 1px solid #c7d2fe;
+      background: #eef2ff;
+      padding: 13px 15px;
+      border-radius: 8px;
+      margin: 14px 0 22px;
+      font-family: Consolas, "Courier New", monospace;
+      color: #1e3a8a;
+      overflow-x: auto;
+    }
     .diagram {
       margin: 18px 0 26px;
       border: 1px solid var(--line);
@@ -131,6 +191,78 @@
       color: var(--muted);
       font-size: 13px;
       text-align: center;
+    }
+    .teaching-card {
+      margin-top: 14px;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      background: #ffffff;
+      overflow: hidden;
+    }
+    .teaching-title {
+      margin: 0;
+      padding: 10px 14px;
+      background: #0f3b73;
+      color: #ffffff;
+      font-weight: 700;
+      text-align: center;
+      font-size: 15px;
+    }
+    .teaching-question {
+      margin: 0;
+      padding: 10px 14px;
+      background: #f8fafc;
+      border-bottom: 1px solid #e2e8f0;
+      color: #334155;
+      font-size: 14px;
+    }
+    .teaching-steps {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      padding: 12px;
+    }
+    .teaching-step {
+      border: 1px solid #dbe3ec;
+      border-radius: 8px;
+      background: #fbfcfe;
+      padding: 10px 12px;
+      min-height: 118px;
+    }
+    .teaching-step strong {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      margin-bottom: 8px;
+      color: #1f2933;
+      font-size: 14px;
+    }
+    .step-no {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--blue);
+      color: #fff;
+      font-weight: 700;
+      font-size: 13px;
+      flex: 0 0 auto;
+    }
+    .teaching-step p {
+      margin: 5px 0;
+      font-size: 13px;
+      color: #475569;
+      line-height: 1.55;
+    }
+    .teaching-note {
+      margin: 0;
+      padding: 10px 14px;
+      border-top: 1px solid #e2e8f0;
+      background: #fff7ed;
+      color: #7c2d12;
+      font-size: 13px;
     }
     svg text {
       font-family: "Microsoft YaHei", "Segoe UI", Arial, sans-serif;
@@ -153,6 +285,8 @@
       header, main, footer { padding-left: 20px; padding-right: 20px; }
       h1 { font-size: 28px; }
       table { font-size: 13px; }
+      .toc-grid { grid-template-columns: 1fr; }
+      .teaching-steps { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -163,20 +297,23 @@
     <p>Markdown 源文档：<code>docs/program-implementation.md</code>。本文档为纯离线 HTML 版，不依赖外部 CDN。</p>
   </header>
   <main>
-    <nav>
-      <a href="#intro">项目定位</a>
-      <a href="#files">文件结构</a>
-      <a href="#arch">总体架构</a>
-      <a href="#flow">数据流</a>
-      <a href="#gui">GUI 层</a>
-      <a href="#config">配置</a>
-      <a href="#excel">Excel 输入</a>
-      <a href="#logic">逻辑层</a>
-      <a href="#plot">绘图</a>
-      <a href="#output">输出</a>
-      <a href="#build">编译版</a>
-      <a href="#debug">排错</a>
-      <a href="#maintenance">维护注意事项</a>
+    <nav aria-label="文档目录">
+      <p class="toc-title">目录</p>
+      <div class="toc-grid">
+        <a href="#intro">项目定位</a>
+        <a href="#files">文件结构</a>
+        <a href="#arch">总体架构</a>
+        <a href="#flow">运行时数据流</a>
+        <a href="#gui">GUI 层实现</a>
+        <a href="#config">配置文件实现</a>
+        <a href="#excel">输入 Excel 要求</a>
+        <a href="#logic">逻辑层实现</a>
+        <a href="#plot">绘图实现</a>
+        <a href="#output">输出文件</a>
+        <a href="#build">编译版实现</a>
+        <a href="#debug">日志和排错</a>
+        <a href="#maintenance">维护注意事项</a>
+      </div>
     </nav>
 
     <section id="intro">
@@ -200,7 +337,7 @@
           <tr><td><code>MotorEffMAP_Logic.py</code></td><td>数据读取、列映射、清洗、归一化、包络线、插值网格、效率区域占比计算。</td></tr>
           <tr><td><code>MotorEffMAP.ini</code></td><td>用户配置文件。源码运行时放在项目根目录；编译版运行时放在 exe 同级目录。</td></tr>
           <tr><td><code>requirements.txt</code></td><td>源码运行依赖。</td></tr>
-          <tr><td><code>build_script.py</code></td><td>PyInstaller 打包脚本，生成 <code>dist/MotorEffMAP/MotorEffMAP.exe</code> 并复制配置文件。</td></tr>
+          <tr><td><code>build_script.py</code></td><td>PyInstaller 打包脚本，生成版本化目录，例如 <code>dist/MotorEffMAP_20260611-V1.2/MotorEffMAP.exe</code>，并复制运行资源。</td></tr>
           <tr><td><code>build_exe.bat</code></td><td>Windows 一键打包入口，自动调用 <code>build_script.py</code>。</td></tr>
           <tr><td><code>README.md</code></td><td>用户快速上手、下载、配置、运行和打包说明。</td></tr>
         </tbody>
@@ -253,8 +390,27 @@
           <path class="arrow" d="M855 137 H890"></path>
         </svg>
         <div class="caption">图 1：GUI 负责交互和输出，逻辑层负责数据处理，配置文件作为用户接口。</div>
+        <div class="teaching-card">
+          <p class="teaching-title">图 1 读图路线：程序到底分成哪几层？</p>
+          <p class="teaching-question">这张图回答的是：用户点按钮后，配置、数据处理、绘图和文件输出分别由谁负责，哪些边界不能混在一起。</p>
+          <div class="teaching-steps">
+            <div class="teaching-step"><strong><span class="step-no">1</span>入口层：用户和 GUI</strong><p>用户只接触 PySide6 界面：选择 Excel、编辑配置、点击处理、切换视图。</p><p>GUI 负责状态、日志、进度、弹窗和保存文件。</p></div>
+            <div class="teaching-step"><strong><span class="step-no">2</span>接口层：INI 配置</strong><p><code>MotorEffMAP.ini</code> 是用户和程序之间的稳定接口。</p><p>GUI 写回配置，逻辑层读取列名、开关、网格和起始坐标。</p></div>
+            <div class="teaching-step"><strong><span class="step-no">3</span>核心层：逻辑和输出</strong><p><code>MotorEffMAP_Logic.py</code> 只处理 DataFrame、包络线、插值和占比。</p><p>matplotlib 和文件保存由 GUI 组织，避免逻辑层反向依赖界面。</p></div>
+          </div>
+          <p class="teaching-note">重点：新增功能时先判断属于 GUI、配置、逻辑还是输出，不能把绘图按钮逻辑塞进数据处理核心。</p>
+        </div>
       </div>
       <p>GUI 与逻辑层的边界是当前实现的核心：GUI 不直接做数值计算，逻辑层不直接操作控件。这样既便于测试，也便于将来替换界面或增加命令行入口。</p>
+      <table>
+        <thead><tr><th>模块</th><th>输入</th><th>输出</th><th>失败处理</th></tr></thead>
+        <tbody>
+          <tr><td><code>MainWindow</code></td><td>用户操作、INI、Excel 路径</td><td>GUI 状态、日志、PNG/XLSX</td><td>捕获可预期错误，提示用户并停止当前输出。</td></tr>
+          <tr><td><code>MotorEffLogic</code></td><td>配置字典、当前 sheet</td><td>清洗数据、包络线、插值网格、占比</td><td>返回 <code>last_error</code> 或抛出领域化错误。</td></tr>
+          <tr><td><code>MotorEffMAP.ini</code></td><td>用户编辑或配置页保存</td><td>列名、开关、网格和绘图参数</td><td>读取兼容旧编码，写回统一 UTF-8 BOM。</td></tr>
+          <tr><td><code>build_script.py</code></td><td>项目 venv、源码、版本文件、图标</td><td>版本化可执行文件夹</td><td>构建失败退出，构建后检查必要文件。</td></tr>
+        </tbody>
+      </table>
     </section>
 
     <section id="flow">
@@ -291,8 +447,28 @@
           <path class="arrow" marker-end="url(#arrow2)" d="M765 239 H810"></path>
         </svg>
         <div class="caption">图 2：从 Excel 到 MAP 图、区域占比 Excel 和占比图的完整处理链路。</div>
+        <div class="teaching-card">
+          <p class="teaching-title">图 2 读图路线：一份 Excel 是怎么变成结果文件的？</p>
+          <p class="teaching-question">这张图回答的是：批处理入口从读取工作簿开始，到每个 sheet 输出 MAP 图、占比表和占比曲线，中间经历哪些不可跳过的步骤。</p>
+          <div class="teaching-steps">
+            <div class="teaching-step"><strong><span class="step-no">1</span>展开输入</strong><p><code>pandas.read_excel(sheet_name=None)</code> 一次读取全部 sheet。</p><p>GUI 把“文件 + sheet”展开成可处理条目。</p></div>
+            <div class="teaching-step"><strong><span class="step-no">2</span>生成计算对象</strong><p>每个 sheet 都经过列映射、归一化、外特性、网格插值。</p><p>这里得到 <code>XI/YI/ZI_Eff/ZI_Power/mask_valid_geo</code>。</p></div>
+            <div class="teaching-step"><strong><span class="step-no">3</span>按开关输出</strong><p>MAP 图和占比图不是固定输出，而是由 INI 开关联动。</p><p>关闭的类型不绘制、不保存，也不应在界面显示旧图。</p></div>
+          </div>
+          <p class="teaching-note">重点：每次点击“处理并保存所有”前必须读取最新 INI，否则配置页修改会和实际输出不一致。</p>
+        </div>
       </div>
       <p>处理流程由 <code>MainWindow.run_process_all()</code> 启动。程序遍历所有 Excel 文件和所有 sheet，每个 sheet 都会按同一配置完成清洗、包络线、插值、绘图和保存。</p>
+      <table>
+        <thead><tr><th>运行时状态</th><th>所在对象</th><th>用途</th></tr></thead>
+        <tbody>
+          <tr><td><code>config_dict</code></td><td><code>MainWindow</code></td><td>当前运行使用的扁平化配置，批处理和手动视图入口会重新读取 INI。</td></tr>
+          <tr><td><code>all_results</code></td><td><code>MainWindow</code></td><td>文件列表中每个 file + sheet 的处理条目。</td></tr>
+          <tr><td><code>sheets_dict</code></td><td><code>MotorEffLogic</code></td><td>当前 Excel 文件的所有 sheet。</td></tr>
+          <tr><td><code>processed_df</code></td><td><code>MotorEffLogic</code></td><td>清洗后的唯一计算数据源。</td></tr>
+          <tr><td><code>f_edge_curve</code></td><td><code>MotorEffLogic</code></td><td>外特性包络线函数，用于限制网格几何区域。</td></tr>
+        </tbody>
+      </table>
     </section>
 
     <section id="gui">
@@ -314,8 +490,9 @@
       </table>
 
       <h3>5.3 配置页</h3>
-      <p>配置页读取 INI 后动态生成表单。保存时收集输入框值，调用 <code>write_ini_file()</code> 写回配置，再重新加载配置，使逻辑层立即使用新参数。</p>
+      <p>配置页读取 INI 后动态生成表单。普通配置项使用输入框，MAP 和占比开关使用 <code>开启</code> / <code>关闭</code> 下拉框，写回时仍保存为 <code>1</code> / <code>0</code>。</p>
       <div class="note">配置文件支持无 section 的传统写法。程序会临时补 <code>[DEFAULT]</code> 再解析，但写回时仍尽量保留原配置文件中的注释结构。</div>
+      <p>配置文件读取优先使用 UTF-8 BOM / UTF-8，失败后兼容 GB18030；保存统一写回 UTF-8 BOM。空值写成 <code>key =</code>，避免产生行尾空白。</p>
 
       <h3>5.4 错误处理</h3>
       <p>GUI 层通过 <code>handle_processing_error()</code> 统一处理可预期错误：写日志、进度归零、弹出提示，并停止后续输出，避免生成半成品。</p>
@@ -358,17 +535,77 @@
         <li>可以存在单位行或文本行，只要核心列无法转成数字，就会变成 NaN 并被删除。</li>
         <li>同一 sheet 建议只包含同一转向、同一电动/发电状态、同一电压等级的数据。</li>
       </ul>
-      <p>缺失必需列时，程序会明确失败，不再用全 0 数据代替。</p>
+      <p>基础必需列是转速、扭矩、功率和电压；如果填写了有效 <code>customUdc</code>，电压可以不来自 Excel 列。效率列是可选联动项，<code>Eff_MCU</code>、<code>Eff_Motor</code>、<code>Eff_SYS</code> 至少有一个可用即可继续。</p>
+      <div class="diagram">
+        <svg width="1040" height="190" viewBox="0 0 1040 190" role="img" aria-label="Excel 列校验流程图">
+          <defs><marker id="arrow3" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L9,3 z" fill="#64748b"></path></marker></defs>
+          <rect class="box box-blue" x="35" y="65" width="150" height="58"></rect><text x="110" y="90" text-anchor="middle">Excel 第一行</text><text x="110" y="110" text-anchor="middle">列名</text>
+          <rect class="box" x="230" y="65" width="180" height="58"></rect><text x="320" y="90" text-anchor="middle">匹配基础列</text><text x="320" y="110" text-anchor="middle">转速 / 扭矩 / 功率 / 电压</text>
+          <rect class="box box-orange" x="455" y="65" width="155" height="58"></rect><text x="532" y="90" text-anchor="middle">基础列完整?</text>
+          <rect class="box" x="655" y="32" width="180" height="58"></rect><text x="745" y="57" text-anchor="middle">匹配可选效率列</text><text x="745" y="77" text-anchor="middle">MCU / Motor / SYS</text>
+          <rect class="box box-green" x="870" y="32" width="140" height="58"></rect><text x="940" y="57" text-anchor="middle">按开关输出</text><text x="940" y="77" text-anchor="middle">MAP / 占比</text>
+          <rect class="box box-orange" x="655" y="115" width="180" height="48"></rect><text x="745" y="144" text-anchor="middle">失败并提示缺失列</text>
+          <path class="arrow" marker-end="url(#arrow3)" d="M185 94 H230"></path>
+          <path class="arrow" marker-end="url(#arrow3)" d="M410 94 H455"></path>
+          <path class="arrow" marker-end="url(#arrow3)" d="M610 82 C630 82,630 61,655 61"></path>
+          <path class="arrow" marker-end="url(#arrow3)" d="M835 61 H870"></path>
+          <path class="arrow" marker-end="url(#arrow3)" d="M610 107 C630 107,630 139,655 139"></path>
+        </svg>
+        <div class="caption">图 3：基础列缺失会停止处理；效率列按配置和开关联动。</div>
+        <div class="teaching-card">
+          <p class="teaching-title">图 3 读图路线：Excel 需要哪些列才算能跑？</p>
+          <p class="teaching-question">这张图回答的是：哪些列是基础必需列，哪些效率列是可选列，以及为什么不能要求 MCU、电机、系统效率三列全部填写。</p>
+          <div class="teaching-steps">
+            <div class="teaching-step"><strong><span class="step-no">1</span>先查基础列</strong><p><code>Speed</code>、<code>Toqrue</code>、<code>P_Motor</code> 和电压来源必须可用。</p><p>缺基础列时没有坐标或功率，后续 MAP 无法成立。</p></div>
+            <div class="teaching-step"><strong><span class="step-no">2</span>再查效率列</strong><p><code>Eff_MCU</code>、<code>Eff_Motor</code>、<code>Eff_SYS</code> 按配置填写情况判断。</p><p>填了哪个、且对应开关开启，就处理哪个。</p></div>
+            <div class="teaching-step"><strong><span class="step-no">3</span>最后决定输出</strong><p>至少一个效率类型可用即可继续。</p><p>不可用类型只跳过，不影响其它类型输出。</p></div>
+          </div>
+          <p class="teaching-note">重点：可选效率列不能进入全局必填链，否则一个空配置会阻断其它正常图。</p>
+        </div>
+      </div>
     </section>
 
     <section id="logic">
       <h2>8. 逻辑层实现</h2>
       <h3>8.1 数据加载</h3>
       <pre><code>self.sheets_dict = pd.read_excel(file_path, sheet_name=None)</code></pre>
-      <p>返回结构是 <code>{sheet_name: DataFrame}</code>。GUI 会把每个 sheet 加入文件列表，处理时通过 <code>set_current_sheet(sheet_name)</code> 切换当前 DataFrame。</p>
+      <p>返回结构是 <code>{sheet_name: DataFrame}</code>。GUI 会把每个 sheet 加入文件列表，处理时通过 <code>set_current_sheet(sheet_name)</code> 切换当前 DataFrame。读取阶段只拆工作簿，不做列名判断和数值清洗，错误会定位到具体 sheet。</p>
 
       <h3>8.2 列映射和基础判断</h3>
       <p><code>filter_data()</code> 会去掉列名首尾空格，用 <code>pd.to_numeric(..., errors='coerce')</code> 转为数字，保留 NaN，不把空值填成 0。</p>
+      <div class="diagram">
+        <svg width="1040" height="300" viewBox="0 0 1040 300" role="img" aria-label="列映射和方向工况判断流程图">
+          <defs><marker id="arrow4" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L9,3 z" fill="#64748b"></path></marker></defs>
+          <rect class="box box-blue" x="35" y="118" width="135" height="58"></rect><text x="102" y="143" text-anchor="middle">raw_df</text><text x="102" y="163" text-anchor="middle">当前 sheet</text>
+          <rect class="box" x="215" y="118" width="150" height="58"></rect><text x="290" y="143" text-anchor="middle">清理列名</text><text x="290" y="163" text-anchor="middle">strip()</text>
+          <rect class="box box-orange" x="410" y="35" width="170" height="58"></rect><text x="495" y="60" text-anchor="middle">基础列数值化</text><text x="495" y="80" text-anchor="middle">Speed / Torque / P</text>
+          <rect class="box box-orange" x="410" y="118" width="170" height="58"></rect><text x="495" y="143" text-anchor="middle">电压来源</text><text x="495" y="163" text-anchor="middle">customUdc 或 U_dc</text>
+          <rect class="box box-orange" x="410" y="201" width="170" height="58"></rect><text x="495" y="226" text-anchor="middle">可选效率列</text><text x="495" y="246" text-anchor="middle">按开关校验</text>
+          <rect class="box" x="630" y="35" width="155" height="58"></rect><text x="707" y="60" text-anchor="middle">原始均值判断</text><text x="707" y="80" text-anchor="middle">转向 / 工况</text>
+          <rect class="box" x="630" y="118" width="155" height="58"></rect><text x="707" y="143" text-anchor="middle">custom 覆盖</text><text x="707" y="163" text-anchor="middle">有值则优先</text>
+          <rect class="box box-green" x="845" y="118" width="155" height="58"></rect><text x="922" y="143" text-anchor="middle">processed_df</text><text x="922" y="163" text-anchor="middle">后续唯一数据源</text>
+          <path class="arrow" marker-end="url(#arrow4)" d="M170 147 H215"></path>
+          <path class="arrow" marker-end="url(#arrow4)" d="M365 137 C390 137,385 64,410 64"></path>
+          <path class="arrow" marker-end="url(#arrow4)" d="M365 147 H410"></path>
+          <path class="arrow" marker-end="url(#arrow4)" d="M365 157 C390 157,385 230,410 230"></path>
+          <path class="arrow" marker-end="url(#arrow4)" d="M580 64 H630"></path>
+          <path class="arrow" marker-end="url(#arrow4)" d="M707 93 V118"></path>
+          <path class="arrow" marker-end="url(#arrow4)" d="M785 147 H845"></path>
+          <path class="arrow" marker-end="url(#arrow4)" d="M580 147 H630"></path>
+          <path class="arrow" marker-end="url(#arrow4)" d="M580 230 C700 230,760 176,845 160"></path>
+        </svg>
+        <div class="caption">图 4：列映射阶段只保留真实数据和 NaN，不把缺失值伪造成 0。</div>
+        <div class="teaching-card">
+          <p class="teaching-title">图 4 读图路线：INI 列名怎么变成程序内部字段？</p>
+          <p class="teaching-question">这张图回答的是：配置里写的是 Excel 表头，程序内部使用统一字段名，中间必须做显式映射和数值化。</p>
+          <div class="teaching-steps">
+            <div class="teaching-step"><strong><span class="step-no">1</span>读取配置列名</strong><p>例如 <code>Speed = 转速</code>、<code>Eff_Motor = 电机效率</code>。</p><p>先去掉空格和引号，再到 Excel 表头中匹配。</p></div>
+            <div class="teaching-step"><strong><span class="step-no">2</span>转换为数值</strong><p>使用 <code>pd.to_numeric(errors='coerce')</code>。</p><p>无法转换的内容变成 NaN，而不是变成 0。</p></div>
+            <div class="teaching-step"><strong><span class="step-no">3</span>判断方向和状态</strong><p>可自动根据扭矩、功率判断正反转和驱动/发电。</p><p><code>customSpeedDirection/customMotionState</code> 填写后覆盖自动判断。</p></div>
+          </div>
+          <p class="teaching-note">重点：缺失值保留为 NaN 是为了让清洗阶段明确删除；伪造成 0 会污染包络线和面积占比。</p>
+        </div>
+      </div>
       <table>
         <thead><tr><th>判断项</th><th>规则</th></tr></thead>
         <tbody>
@@ -376,31 +613,356 @@
           <tr><td>状态</td><td>功率均值 <code>&gt; 0</code> 为 <code>电动</code>，否则为 <code>发电</code>。</td></tr>
         </tbody>
       </table>
+      <table>
+        <thead><tr><th>效率列条件</th><th>行为</th></tr></thead>
+        <tbody>
+          <tr><td>配置项为空</td><td>跳过该效率类型。</td></tr>
+          <tr><td>配置项有值且对应输出开启</td><td>列必须存在，否则当前 sheet 失败。</td></tr>
+          <tr><td>配置项有值但输出关闭</td><td>尝试读取；失败只警告，不阻断其它输出。</td></tr>
+          <tr><td>三个效率列都不可用</td><td>当前 sheet 失败，因为没有可计算对象。</td></tr>
+        </tbody>
+      </table>
 
       <h3>8.3 归一化</h3>
-      <p><code>normalization()</code> 删除核心列存在 NaN 的行，将相邻差值不超过 6 rpm 的转速合并为平均转速，再过滤效率值，只保留 <code>[0, 100)</code>。</p>
+      <p><code>normalization()</code> 删除基础列和当前可用效率列存在 NaN 的行，将相邻差值不超过 6 rpm 的转速合并为平均转速，再过滤效率值，只保留 <code>[0, 100)</code>。</p>
+      <div class="diagram">
+        <svg width="1040" height="150" viewBox="0 0 1040 150" role="img" aria-label="归一化流程图">
+          <defs><marker id="arrow5" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L9,3 z" fill="#64748b"></path></marker></defs>
+          <rect class="box box-blue" x="30" y="46" width="130" height="54"></rect><text x="95" y="78" text-anchor="middle">processed_df</text>
+          <rect class="box" x="205" y="46" width="150" height="54"></rect><text x="280" y="68" text-anchor="middle">dropna</text><text x="280" y="88" text-anchor="middle">核心列 + 可用效率列</text>
+          <rect class="box" x="400" y="46" width="150" height="54"></rect><text x="475" y="68" text-anchor="middle">Speed 排序</text><text x="475" y="88" text-anchor="middle">相邻点合并</text>
+          <rect class="box" x="595" y="46" width="150" height="54"></rect><text x="670" y="68" text-anchor="middle">Speed/Torque</text><text x="670" y="88" text-anchor="middle">二次排序</text>
+          <rect class="box box-green" x="790" y="46" width="190" height="54"></rect><text x="885" y="68" text-anchor="middle">过滤效率范围</text><text x="885" y="88" text-anchor="middle">0 <= eff < 100</text>
+          <path class="arrow" marker-end="url(#arrow5)" d="M160 73 H205"></path>
+          <path class="arrow" marker-end="url(#arrow5)" d="M355 73 H400"></path>
+          <path class="arrow" marker-end="url(#arrow5)" d="M550 73 H595"></path>
+          <path class="arrow" marker-end="url(#arrow5)" d="M745 73 H790"></path>
+        </svg>
+        <div class="caption">图 5：归一化只处理当前实际可用的效率列，避免未填写列阻断其它图。</div>
+        <div class="teaching-card">
+          <p class="teaching-title">图 5 读图路线：清洗数据时到底删什么、保留什么？</p>
+          <p class="teaching-question">这张图回答的是：为什么程序先删核心列空行，再做转速合并和效率范围过滤，而不是直接拿原始表插值。</p>
+          <div class="teaching-steps">
+            <div class="teaching-step"><strong><span class="step-no">1</span>删除核心空行</strong><p>只按坐标、功率、电压和当前可用效率列删除 NaN。</p><p>未配置的效率列不参与清洗。</p></div>
+            <div class="teaching-step"><strong><span class="step-no">2</span>合并转速层</strong><p>相邻转速差小于阈值时归入同一层。</p><p>这样包络线不会因为台架波动产生毛刺。</p></div>
+            <div class="teaching-step"><strong><span class="step-no">3</span>过滤效率范围</strong><p>效率必须满足 <code>0 <= eff < 100</code>。</p><p>过滤后按 Speed/Torque 排序，给后续分组和插值使用。</p></div>
+          </div>
+          <p class="teaching-note">重点：归一化的目标是得到可信的 <code>processed_df</code>，它是包络线、插值和占比的唯一数据源。</p>
+        </div>
+      </div>
 
       <h3>8.4 外特性包络线</h3>
       <p>程序按转速分组取最大扭矩，再根据点数选择常数曲线、线性插值或 <code>PchipInterpolator</code> 保形插值。插值结果会限制在 <code>[0, 观测最大扭矩 * 1.05]</code>，防止过冲导致网格异常变大。</p>
+      <div class="diagram">
+        <svg width="1040" height="230" viewBox="0 0 1040 230" role="img" aria-label="外特性包络线示意图">
+          <defs><marker id="arrow6" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L9,3 z" fill="#64748b"></path></marker></defs>
+          <rect class="box box-blue" x="35" y="86" width="150" height="58"></rect><text x="110" y="111" text-anchor="middle">Speed/Torque</text><text x="110" y="131" text-anchor="middle">清洗点云</text>
+          <rect class="box" x="230" y="86" width="160" height="58"></rect><text x="310" y="111" text-anchor="middle">按 Speed 分组</text><text x="310" y="131" text-anchor="middle">取最大 Torque</text>
+          <rect class="box box-orange" x="435" y="86" width="155" height="58"></rect><text x="512" y="111" text-anchor="middle">外特性点数</text><text x="512" y="131" text-anchor="middle">0 / 1 / 2 / >2</text>
+          <rect class="box" x="635" y="25" width="160" height="48"></rect><text x="715" y="54" text-anchor="middle">常数 / 线性 / PCHIP</text>
+          <rect class="box" x="635" y="96" width="160" height="48"></rect><text x="715" y="125" text-anchor="middle">限制非负和上界</text>
+          <rect class="box box-green" x="840" y="96" width="145" height="48"></rect><text x="912" y="125" text-anchor="middle">f_edge_curve</text>
+          <path class="arrow" marker-end="url(#arrow6)" d="M185 115 H230"></path>
+          <path class="arrow" marker-end="url(#arrow6)" d="M390 115 H435"></path>
+          <path class="arrow" marker-end="url(#arrow6)" d="M590 102 C615 102,610 49,635 49"></path>
+          <path class="arrow" marker-end="url(#arrow6)" d="M715 73 V96"></path>
+          <path class="arrow" marker-end="url(#arrow6)" d="M795 120 H840"></path>
+        </svg>
+        <div class="caption">图 6：包络线决定效率 MAP 的几何运行区域，不让网格扩展到无意义的高扭矩区域。</div>
+        <div class="teaching-card">
+          <p class="teaching-title">图 6 读图路线：外特性包络线从哪里来？</p>
+          <p class="teaching-question">这张图回答的是：为什么要先算包络线，以及包络线如何限制后续网格、显示和面积占比的边界。</p>
+          <div class="teaching-steps">
+            <div class="teaching-step"><strong><span class="step-no">1</span>按转速分组</strong><p>清洗后的数据先按 <code>Speed</code> 分组。</p><p>每一组代表一个转速层。</p></div>
+            <div class="teaching-step"><strong><span class="step-no">2</span>取最大扭矩</strong><p>每个转速层取 <code>Torque.max()</code>。</p><p>这些点就是外特性采样点。</p></div>
+            <div class="teaching-step"><strong><span class="step-no">3</span>插值成连续边界</strong><p>1 点用常数、2 点用线性、多点用 PCHIP。</p><p>结果裁剪到 <code>0 ~ 最大观测扭矩 * 1.05</code>。</p></div>
+          </div>
+          <p class="teaching-note">重点：包络线不是效率等高线，它是“可运行区域上边界”；没有它，网格会扩展到物理上没有数据支撑的区域。</p>
+        </div>
+      </div>
 
       <h3>8.5 网格和插值</h3>
       <p>转速轴从 0 到最大转速按 <code>SpeedGrid</code> 生成。扭矩轴按每个转速列独立生成，从 0 到外特性包络线扭矩，再通过 <code>griddata(..., method='linear')</code> 插值效率和功率。</p>
       <pre><code>XI, YI, ZI_Power, ZI_Eff, mask_valid_geo = process_map_data("Eff_MCU")</code></pre>
+      <div class="diagram">
+        <svg width="1040" height="300" viewBox="0 0 1040 300" role="img" aria-label="非矩形网格生成原理图">
+          <defs><marker id="arrow7" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L9,3 z" fill="#64748b"></path></marker></defs>
+          <rect class="box box-blue" x="35" y="118" width="150" height="58"></rect><text x="110" y="143" text-anchor="middle">xi_speed_axis</text><text x="110" y="163" text-anchor="middle">0..max_speed</text>
+          <rect class="box" x="230" y="118" width="160" height="58"></rect><text x="310" y="143" text-anchor="middle">每列调用</text><text x="310" y="163" text-anchor="middle">f_edge_curve</text>
+          <rect class="box" x="435" y="118" width="160" height="58"></rect><text x="515" y="143" text-anchor="middle">0 到最大扭矩</text><text x="515" y="163" text-anchor="middle">按 TorqueGrid 填充</text>
+          <rect class="box" x="640" y="118" width="150" height="58"></rect><text x="715" y="143" text-anchor="middle">短列补 NaN</text><text x="715" y="163" text-anchor="middle">统一矩阵形状</text>
+          <rect class="box box-green" x="835" y="64" width="160" height="58"></rect><text x="915" y="89" text-anchor="middle">griddata</text><text x="915" y="109" text-anchor="middle">效率 / 功率插值</text>
+          <rect class="box box-orange" x="835" y="174" width="160" height="58"></rect><text x="915" y="199" text-anchor="middle">StartSpeed/Torque</text><text x="915" y="219" text-anchor="middle">截止区域</text>
+          <path class="arrow" marker-end="url(#arrow7)" d="M185 147 H230"></path>
+          <path class="arrow" marker-end="url(#arrow7)" d="M390 147 H435"></path>
+          <path class="arrow" marker-end="url(#arrow7)" d="M595 147 H640"></path>
+          <path class="arrow" marker-end="url(#arrow7)" d="M790 139 C815 139,810 93,835 93"></path>
+          <path class="arrow" marker-end="url(#arrow7)" d="M915 122 V174"></path>
+        </svg>
+        <div class="caption">图 7：程序生成的是包络线内部的非矩形网格，矩阵空位用 NaN 表示。</div>
+        <div class="teaching-card">
+          <p class="teaching-title">图 7 读图路线：为什么网格不是普通矩形？</p>
+          <p class="teaching-question">这张图回答的是：MAP 图虽然用二维矩阵绘制，但真实统计区域是按每个转速列独立生成的非矩形区域。</p>
+          <div class="teaching-steps">
+            <div class="teaching-step"><strong><span class="step-no">1</span>生成转速轴</strong><p>从 0 到最大转速按 <code>SpeedGrid</code> 建列。</p><p>每一列对应一个固定转速。</p></div>
+            <div class="teaching-step"><strong><span class="step-no">2</span>逐列生成扭矩点</strong><p>用 <code>f_edge_curve(speed)</code> 得到该列最大扭矩。</p><p>从 0 到最大扭矩按 <code>TorqueGrid</code> 建点，并补齐边界点。</p></div>
+            <div class="teaching-step"><strong><span class="step-no">3</span>NaN 填充短列</strong><p>不同列高度不同，短列空位填 NaN。</p><p>NaN 是矩阵占位，不属于几何区域。</p></div>
+          </div>
+          <p class="teaching-note">重点：<code>mask_valid_geo</code> 只标记包络线内且未截止的网格点，它才是面积占比分母。</p>
+        </div>
+      </div>
+      <table>
+        <thead><tr><th>变量</th><th>含义</th><th>用途</th></tr></thead>
+        <tbody>
+          <tr><td><code>points</code></td><td>原始有效点的 <code>(Speed, Torque)</code> 坐标。</td><td>插值输入坐标。</td></tr>
+          <tr><td><code>XI</code></td><td>每个网格点的转速坐标。</td><td>X 轴绘图、起始转速截止。</td></tr>
+          <tr><td><code>YI</code></td><td>每个网格点的扭矩坐标，包络线外为 NaN。</td><td>Y 轴绘图、几何区域判断。</td></tr>
+          <tr><td><code>ZI_Eff</code></td><td>插值后的效率矩阵。</td><td>效率填色、等高线、占比分子。</td></tr>
+          <tr><td><code>ZI_Power</code></td><td>插值后的功率矩阵。</td><td>功率等高线。</td></tr>
+          <tr><td><code>mask_valid_geo</code></td><td>包络线内且未被起始坐标屏蔽的几何区域。</td><td>效率占比分母。</td></tr>
+        </tbody>
+      </table>
+      <div class="cards">
+        <div class="card"><strong>点数保护</strong>唯一转速/扭矩点少于 3 个时，不调用 <code>griddata</code>，直接提示有效点不足。</div>
+        <div class="card"><strong>维度保护</strong>点集共线或退化时直接失败，避免底层 Qhull 错误外泄。</div>
+        <div class="card"><strong>网格保护</strong><code>max_rows * n_cols</code> 超过 <code>MaxGridPoints</code> 时停止，避免内存异常。</div>
+      </div>
 
       <h3>8.6 效率区域占比</h3>
       <p>当前 GUI 使用 <code>mask_valid_geo</code> 作为分母，因此效率区域占比按几何运行区域计算。默认 <code>StartSpeed=0</code>、<code>StartTorque=0</code> 时，从 <code>0rpm / 0Nm</code> 开始。</p>
-      <pre><code>Ratio(level) = count(z_eff &gt;= level) / count(geo_mask) * 100</code></pre>
+      <div class="formula">Ratio(level) = count((ZI_Eff &gt;= level) &amp; mask_valid_geo) / count(mask_valid_geo) * 100</div>
+      <div class="diagram">
+        <svg width="1040" height="190" viewBox="0 0 1040 190" role="img" aria-label="效率占比分母分子示意图">
+          <defs><marker id="arrow8" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L9,3 z" fill="#64748b"></path></marker></defs>
+          <rect class="box box-blue" x="45" y="65" width="185" height="58"></rect><text x="137" y="90" text-anchor="middle">mask_valid_geo</text><text x="137" y="110" text-anchor="middle">包络线内几何区域</text>
+          <rect class="box" x="285" y="65" width="170" height="58"></rect><text x="370" y="90" text-anchor="middle">分母</text><text x="370" y="110" text-anchor="middle">count(mask)</text>
+          <rect class="box box-orange" x="285" y="130" width="170" height="48"></rect><text x="370" y="160" text-anchor="middle">ZI_Eff >= 阈值</text>
+          <rect class="box" x="510" y="88" width="190" height="58"></rect><text x="605" y="113" text-anchor="middle">只统计 mask 内达标点</text><text x="605" y="133" text-anchor="middle">NaN 不计入分子</text>
+          <rect class="box box-green" x="755" y="88" width="220" height="58"></rect><text x="865" y="113" text-anchor="middle">达标点数 / 分母 * 100</text><text x="865" y="133" text-anchor="middle">得到每个阈值占比</text>
+          <path class="arrow" marker-end="url(#arrow8)" d="M230 94 H285"></path>
+          <path class="arrow" marker-end="url(#arrow8)" d="M455 94 C480 94,480 117,510 117"></path>
+          <path class="arrow" marker-end="url(#arrow8)" d="M455 154 C485 154,485 132,510 132"></path>
+          <path class="arrow" marker-end="url(#arrow8)" d="M700 117 H755"></path>
+        </svg>
+        <div class="caption">图 8：分母按几何运行区域，分子按几何区域内达到阈值的效率点。</div>
+        <div class="teaching-card">
+          <p class="teaching-title">图 8 读图路线：面积占比的公式怎么落到矩阵上？</p>
+          <p class="teaching-question">这张图回答的是：同一个效率阈值下，哪些点进入分母，哪些点进入分子，NaN 和凸包外区域如何处理。</p>
+          <div class="teaching-steps">
+            <div class="teaching-step"><strong><span class="step-no">1</span>先定分母</strong><p><code>denominator = count(mask_valid_geo)</code>。</p><p>它表示包络线内、起始坐标以上的几何网格点。</p></div>
+            <div class="teaching-step"><strong><span class="step-no">2</span>再定分子</strong><p><code>count((ZI_Eff &gt;= level) &amp; mask_valid_geo)</code>。</p><p>只有几何区域内达标的效率点才算分子。</p></div>
+            <div class="teaching-step"><strong><span class="step-no">3</span>最后算百分比</strong><p><code>Ratio = 分子 / 分母 * 100</code>。</p><p>每个 <code>EffMAPStep</code> 阈值都重复一次。</p></div>
+          </div>
+          <p class="teaching-note">重点：分母不用“插值成功点数”，而用几何运行区域；这样凸包外无法插值的区域不会把占比虚高。</p>
+        </div>
+      </div>
+      <p>分母不是 <code>griddata</code> 成功插值的非 NaN 点数，而是包络线内、起始坐标以上的几何网格点数。凸包外但仍处于包络线内的点会计入分母；如果无法插值得到效率值，它不会计入分子，因此占比结果更保守。</p>
+
+      <h3>8.7 核心算法原理图</h3>
+      <p>下面三张图用几何区域解释第 8 章最容易误解的部分：程序统计的是包络线内的运行区域，不是完整矩形；效率达标区域是这个运行区域中的子集；<code>StartSpeed</code> 和 <code>StartTorque</code> 会同时改变图形显示起点和占比分母。</p>
+
+      <h4>8.7.1 非矩形运行区域</h4>
+      <div class="diagram">
+        <svg width="1040" height="320" viewBox="0 0 1040 320" role="img" aria-label="非矩形运行区域原理图">
+          <defs>
+            <pattern id="gridDotsA" width="18" height="18" patternUnits="userSpaceOnUse">
+              <circle cx="3" cy="3" r="1.5" fill="#94a3b8"></circle>
+            </pattern>
+          </defs>
+          <rect class="box" x="40" y="30" width="430" height="250"></rect>
+          <line x1="85" y1="245" x2="430" y2="245" stroke="#64748b" stroke-width="1.3"></line>
+          <line x1="85" y1="245" x2="85" y2="65" stroke="#64748b" stroke-width="1.3"></line>
+          <text x="258" y="270" text-anchor="middle">转速 Speed</text>
+          <text x="62" y="150" text-anchor="middle" transform="rotate(-90 62 150)">扭矩 Torque</text>
+          <rect x="85" y="65" width="345" height="180" fill="#f8fafc" stroke="#cbd5e1" stroke-dasharray="5,4"></rect>
+          <path d="M85 245 L85 170 C118 110 160 92 215 82 C280 70 350 78 430 96 L430 245 Z" fill="#dbeafe" stroke="#2563eb" stroke-width="2"></path>
+          <path d="M85 170 C118 110 160 92 215 82 C280 70 350 78 430 96" fill="none" stroke="#1d4ed8" stroke-width="2.5"></path>
+          <path d="M85 245 L85 170 C118 110 160 92 215 82 C280 70 350 78 430 96 L430 245 Z" fill="url(#gridDotsA)" opacity="0.9"></path>
+          <text x="250" y="126" text-anchor="middle" fill="#1e3a8a">包络线内几何运行区域</text>
+          <text x="250" y="148" text-anchor="middle" fill="#1e3a8a">mask_valid_geo 的基础范围</text>
+          <text x="256" y="38" text-anchor="middle" font-weight="700">程序实际统计区域</text>
+
+          <rect class="box box-orange" x="565" y="60" width="390" height="190"></rect>
+          <text x="760" y="92" text-anchor="middle" font-weight="700">为什么不是完整矩形？</text>
+          <text x="760" y="126" text-anchor="middle">完整矩形包含包络线外的不可运行区</text>
+          <text x="760" y="156" text-anchor="middle">程序逐个转速列生成 0 到最大扭矩的点</text>
+          <text x="760" y="186" text-anchor="middle">短列用 NaN 填充，只为保持矩阵形状一致</text>
+          <text x="760" y="216" text-anchor="middle" fill="#b45309">占比分母只使用包络线内的几何点</text>
+        </svg>
+        <div class="caption">图 9：效率 MAP 的统计区域不是完整矩形，而是外特性包络线以内的非矩形运行区域。</div>
+        <div class="teaching-card">
+          <p class="teaching-title">图 9 读图路线：分母区域为什么长成这个形状？</p>
+          <p class="teaching-question">这张图回答的是：统计区域由电机外特性决定，不能简单用最大转速 × 最大扭矩的矩形代替。</p>
+          <div class="teaching-steps">
+            <div class="teaching-step"><strong><span class="step-no">1</span>矩形区域只是画布</strong><p>最大转速和最大扭矩只能定义坐标范围。</p><p>矩形右上角很多点并不是可运行点。</p></div>
+            <div class="teaching-step"><strong><span class="step-no">2</span>包络线给出上边界</strong><p>每个转速的最大扭矩不同。</p><p>包络线以下才是可以参与统计的几何区域。</p></div>
+            <div class="teaching-step"><strong><span class="step-no">3</span>网格点代表面积</strong><p>程序用网格点计数近似面积。</p><p>网格越细，占比越接近连续面积结果，但计算量越大。</p></div>
+          </div>
+          <p class="teaching-note">重点：<code>SpeedGrid/TorqueGrid</code> 是面积近似精度和运行速度之间的平衡，不是随便越小越好。</p>
+        </div>
+      </div>
+
+      <h4>8.7.2 面积占比分母和分子</h4>
+      <div class="diagram">
+        <svg width="1040" height="340" viewBox="0 0 1040 340" role="img" aria-label="面积占比分母分子原理图">
+          <defs>
+            <pattern id="denominatorPattern" width="16" height="16" patternUnits="userSpaceOnUse">
+              <circle cx="4" cy="4" r="1.4" fill="#60a5fa"></circle>
+            </pattern>
+            <pattern id="numeratorPattern" width="12" height="12" patternUnits="userSpaceOnUse">
+              <path d="M2 6 L5 9 L10 2" fill="none" stroke="#16803c" stroke-width="1.6"></path>
+            </pattern>
+          </defs>
+          <rect class="box" x="40" y="30" width="430" height="265"></rect>
+          <line x1="85" y1="260" x2="430" y2="260" stroke="#64748b" stroke-width="1.3"></line>
+          <line x1="85" y1="260" x2="85" y2="70" stroke="#64748b" stroke-width="1.3"></line>
+          <path d="M85 260 L85 185 C118 128 165 106 220 94 C285 82 352 88 430 108 L430 260 Z" fill="#eff6ff" stroke="#2563eb" stroke-width="2"></path>
+          <path d="M85 260 L85 185 C118 128 165 106 220 94 C285 82 352 88 430 108 L430 260 Z" fill="url(#denominatorPattern)"></path>
+          <path d="M185 235 C195 190 220 162 260 145 C300 128 350 134 400 148 L400 235 Z" fill="#dcfce7" stroke="#16803c" stroke-width="2"></path>
+          <path d="M185 235 C195 190 220 162 260 145 C300 128 350 134 400 148 L400 235 Z" fill="url(#numeratorPattern)"></path>
+          <text x="258" y="55" text-anchor="middle" font-weight="700">以 90% 阈值为例</text>
+          <text x="260" y="175" text-anchor="middle" fill="#166534">效率 ≥ 90% 的区域（分子）</text>
+          <text x="257" y="282" text-anchor="middle">包络线内几何运行区域（分母）</text>
+
+          <rect class="box box-green" x="550" y="70" width="410" height="190"></rect>
+          <text x="755" y="103" text-anchor="middle" font-weight="700">计算公式</text>
+          <text x="755" y="140" text-anchor="middle" font-family="Consolas, Courier New, monospace">Ratio(level)</text>
+          <text x="755" y="169" text-anchor="middle" font-family="Consolas, Courier New, monospace">= count((ZI_Eff &gt;= level) &amp; mask_valid_geo)</text>
+          <text x="755" y="198" text-anchor="middle" font-family="Consolas, Courier New, monospace">/ count(mask_valid_geo) * 100</text>
+          <text x="755" y="232" text-anchor="middle" fill="#166534">NaN 不计入分子，但几何区域仍可计入分母</text>
+        </svg>
+        <div class="caption">图 10：分母是几何运行区域，分子是该区域内达到指定效率阈值的点，最终得到面积占比。</div>
+        <div class="teaching-card">
+          <p class="teaching-title">图 10 读图路线：高效区占比到底在比较哪两个面积？</p>
+          <p class="teaching-question">这张图回答的是：以 90% 为例，“高效区”不是整张图上的蓝色区域，而是几何运行区域内部的达标子区域。</p>
+          <div class="teaching-steps">
+            <div class="teaching-step"><strong><span class="step-no">1</span>底图：几何运行区域</strong><p>包络线内的全部有效网格点构成分母。</p><p>起始坐标以下的点已经被剔除。</p></div>
+            <div class="teaching-step"><strong><span class="step-no">2</span>叠加：达标区域</strong><p>在底图内检查 <code>ZI_Eff &gt;= 90</code>。</p><p>达标点构成分子，不达标点只留在分母中。</p></div>
+            <div class="teaching-step"><strong><span class="step-no">3</span>曲线：多个阈值</strong><p>80、85、90、95、99 等阈值分别计算。</p><p>阈值越高，达标区域通常越小，占比曲线下降。</p></div>
+          </div>
+          <p class="teaching-note">记忆口径：先圈定“能运行的地盘”，再数“达到阈值的地盘”，最后相除。</p>
+        </div>
+      </div>
+
+      <h4>8.7.3 起始坐标截止区域</h4>
+      <div class="diagram">
+        <svg width="1040" height="310" viewBox="0 0 1040 310" role="img" aria-label="StartSpeed 和 StartTorque 截止区域原理图">
+          <defs>
+            <pattern id="cutPattern" width="10" height="10" patternUnits="userSpaceOnUse">
+              <path d="M0 10 L10 0" stroke="#f97316" stroke-width="1.2"></path>
+            </pattern>
+          </defs>
+          <rect class="box" x="40" y="35" width="455" height="235"></rect>
+          <line x1="90" y1="235" x2="450" y2="235" stroke="#64748b" stroke-width="1.3"></line>
+          <line x1="90" y1="235" x2="90" y2="70" stroke="#64748b" stroke-width="1.3"></line>
+          <path d="M90 235 L90 162 C130 112 180 92 240 84 C306 76 370 84 450 102 L450 235 Z" fill="#ecfdf5" stroke="#16803c" stroke-width="2"></path>
+          <rect x="90" y="70" width="92" height="165" fill="url(#cutPattern)" opacity="0.85"></rect>
+          <rect x="90" y="204" width="360" height="31" fill="url(#cutPattern)" opacity="0.85"></rect>
+          <line x1="182" y1="235" x2="182" y2="70" stroke="#b45309" stroke-width="2" stroke-dasharray="6,4"></line>
+          <line x1="90" y1="204" x2="450" y2="204" stroke="#b45309" stroke-width="2" stroke-dasharray="6,4"></line>
+          <text x="182" y="258" text-anchor="middle" fill="#b45309">StartSpeed</text>
+          <text x="70" y="207" text-anchor="middle" fill="#b45309">StartTorque</text>
+          <text x="305" y="145" text-anchor="middle" fill="#166534">保留区域参与显示和占比分母</text>
+          <text x="140" y="115" text-anchor="middle" fill="#b45309">截止</text>
+          <text x="250" y="226" text-anchor="middle" fill="#b45309">截止</text>
+          <text x="268" y="55" text-anchor="middle" font-weight="700">StartSpeed / StartTorque 改变几何分母</text>
+
+          <rect class="box box-orange" x="575" y="70" width="400" height="170"></rect>
+          <text x="775" y="103" text-anchor="middle" font-weight="700">程序中的掩码逻辑</text>
+          <text x="775" y="136" text-anchor="middle" font-family="Consolas, Courier New, monospace">cutoff_mask = (XI &lt; StartSpeed) | (YI &lt; StartTorque)</text>
+          <text x="775" y="168" text-anchor="middle">截止区域：ZI_Eff / ZI_Power 设为 NaN</text>
+          <text x="775" y="198" text-anchor="middle">保留区域：mask_valid_geo = True</text>
+          <text x="775" y="224" text-anchor="middle" fill="#b45309">因此图形显示和占比分母使用同一个起始坐标</text>
+        </svg>
+        <div class="caption">图 11：设置起始转速或起始扭矩后，低于起点的区域会从显示和占比分母中同时剔除。</div>
+        <div class="teaching-card">
+          <p class="teaching-title">图 11 读图路线：StartSpeed/StartTorque 改了什么？</p>
+          <p class="teaching-question">这张图回答的是：起始转速和起始扭矩不是只改坐标轴显示，它们也会改变面积占比的分母。</p>
+          <div class="teaching-steps">
+            <div class="teaching-step"><strong><span class="step-no">1</span>生成截止掩码</strong><p><code>cutoff_mask = (XI &lt; StartSpeed) | (YI &lt; StartTorque)</code>。</p><p>低转速或低扭矩任一条件命中都截止。</p></div>
+            <div class="teaching-step"><strong><span class="step-no">2</span>屏蔽图形矩阵</strong><p>截止区域的 <code>ZI_Eff</code> 和 <code>ZI_Power</code> 设为 NaN。</p><p>因此 MAP 图不会显示这部分。</p></div>
+            <div class="teaching-step"><strong><span class="step-no">3</span>同步调整分母</strong><p><code>mask_valid_geo = 包络线内 &amp; ~cutoff_mask</code>。</p><p>占比只按保留区域统计。</p></div>
+          </div>
+          <p class="teaching-note">重点：如果设置 <code>StartSpeed=50</code>、<code>StartTorque=5</code>，图形起点和占比分母都会从这个坐标开始。</p>
+        </div>
+      </div>
+
+      <h3>8.8 边界情况</h3>
+      <table>
+        <thead><tr><th>场景</th><th>当前处理</th></tr></thead>
+        <tbody>
+          <tr><td>Excel 尾部空行</td><td>数值化后为 NaN，在归一化阶段删除。</td></tr>
+          <tr><td>基础列缺失</td><td><code>filter_data()</code> 记录 <code>last_error</code> 并返回失败。</td></tr>
+          <tr><td>某个效率列未填写</td><td>该效率类型不可用，不影响其它已配置效率类型。</td></tr>
+          <tr><td>输出开关关闭</td><td>GUI 不绘制、不保存对应 MAP 或占比。</td></tr>
+          <tr><td><code>customUdc</code> 非数字</td><td>记录警告，回退到 <code>U_dc</code> 列。</td></tr>
+          <tr><td>有效点少于 3 个或共线</td><td>抛出可读错误，不让底层 Qhull 异常直接暴露。</td></tr>
+          <tr><td>网格超过 <code>MaxGridPoints</code></td><td>停止处理，提示增大步长或检查包络线。</td></tr>
+        </tbody>
+      </table>
     </section>
 
     <section id="plot">
       <h2>9. 绘图实现</h2>
       <p><code>switch_plot()</code> 负责绘制 MCU、电机或系统效率 MAP。效率使用 <code>contourf</code> 填色，效率等高线为黑色，功率等高线为绿色。保存 PNG 时使用约 25cm x 20cm 的图像比例和 200 DPI。</p>
+      <table>
+        <thead><tr><th>版式项</th><th>当前实现</th></tr></thead>
+        <tbody>
+          <tr><td>图像比例</td><td>约 25cm x 20cm，对应 <code>9.84 x 7.87</code> 英寸。</td></tr>
+          <tr><td>GUI 显示容器</td><td>使用与导出图一致的长宽比例。</td></tr>
+          <tr><td>边距</td><td>通过 <code>apply_figure_layout()</code> 统一设置。</td></tr>
+          <tr><td>坐标起点</td><td>从 <code>StartSpeed</code> / <code>StartTorque</code> 开始显示。</td></tr>
+          <tr><td>保存 DPI</td><td><code>200</code>。</td></tr>
+        </tbody>
+      </table>
+      <div class="diagram">
+        <svg width="1040" height="210" viewBox="0 0 1040 210" role="img" aria-label="MAP 绘图层叠示意图">
+          <defs><marker id="arrow9" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L9,3 z" fill="#64748b"></path></marker></defs>
+          <rect class="box box-blue" x="35" y="76" width="170" height="58"></rect><text x="120" y="101" text-anchor="middle">process_map_data</text><text x="120" y="121" text-anchor="middle">插值矩阵</text>
+          <rect class="box" x="260" y="25" width="170" height="48"></rect><text x="345" y="54" text-anchor="middle">ZI_Eff 填色</text>
+          <rect class="box" x="260" y="86" width="170" height="48"></rect><text x="345" y="115" text-anchor="middle">效率等高线</text>
+          <rect class="box" x="260" y="147" width="170" height="48"></rect><text x="345" y="176" text-anchor="middle">ZI_Power 功率线</text>
+          <rect class="box box-green" x="500" y="76" width="170" height="58"></rect><text x="585" y="101" text-anchor="middle">统一版式</text><text x="585" y="121" text-anchor="middle">比例 / 边距 / 坐标</text>
+          <rect class="box box-orange" x="740" y="76" width="120" height="58"></rect><text x="800" y="101" text-anchor="middle">GUI 显示</text><text x="800" y="121" text-anchor="middle">Canvas</text>
+          <rect class="box box-orange" x="890" y="76" width="120" height="58"></rect><text x="950" y="101" text-anchor="middle">PNG 保存</text><text x="950" y="121" text-anchor="middle">200 DPI</text>
+          <path class="arrow" marker-end="url(#arrow9)" d="M205 105 C230 105,230 49,260 49"></path>
+          <path class="arrow" marker-end="url(#arrow9)" d="M205 105 H260"></path>
+          <path class="arrow" marker-end="url(#arrow9)" d="M205 105 C230 105,230 171,260 171"></path>
+          <path class="arrow" marker-end="url(#arrow9)" d="M430 49 C465 49,465 90,500 90"></path>
+          <path class="arrow" marker-end="url(#arrow9)" d="M430 110 H500"></path>
+          <path class="arrow" marker-end="url(#arrow9)" d="M430 171 C465 171,465 120,500 120"></path>
+          <path class="arrow" marker-end="url(#arrow9)" d="M670 105 H740"></path>
+          <path class="arrow" marker-end="url(#arrow9)" d="M860 105 H890"></path>
+        </svg>
+        <div class="caption">图 12：MAP 图由效率填色、效率等高线和功率等高线叠加生成，显示和保存共用版式。</div>
+        <div class="teaching-card">
+          <p class="teaching-title">图 12 读图路线：一张 MAP 图由哪些图层叠出来？</p>
+          <p class="teaching-question">这张图回答的是：用户看到的效率 MAP 不是单一图片，而是效率填色、效率等高线、功率等高线和标题信息的组合。</p>
+          <div class="teaching-steps">
+            <div class="teaching-step"><strong><span class="step-no">1</span>底层：效率填色</strong><p><code>contourf(XI, YI, ZI_Eff)</code> 生成效率色块。</p><p>NaN 区域不着色，保留几何边界。</p></div>
+            <div class="teaching-step"><strong><span class="step-no">2</span>中层：等高线</strong><p>黑色线表示效率等级，绿色线表示功率等级。</p><p>标签会做重叠过滤，避免文字压在一起。</p></div>
+            <div class="teaching-step"><strong><span class="step-no">3</span>输出：显示和保存</strong><p>GUI 显示和 PNG 保存共用比例常量。</p><p>保存使用固定尺寸和 200 DPI，保证版式稳定。</p></div>
+          </div>
+          <p class="teaching-note">重点：界面图和保存图必须共享长宽比与边距，否则会出现“保存正常、界面变形”的问题。</p>
+        </div>
+      </div>
       <p><code>process_area_ratios()</code> 会保存效率区域占比 Excel 和占比 PNG。占比图中 MCU 使用蓝色星标线，电机使用绿色圆点线，系统使用洋红色加号线。</p>
+      <p>占比图的保存和显示共用 <code>_plot_ratio_on_axes()</code>，数据来源共用 <code>_collect_ratio_data()</code>。因此手动点击“效率占比”和批处理保存 PNG 使用同一套开关判断、同一套比例、同一套曲线样式。</p>
     </section>
 
     <section id="output">
       <h2>10. 输出文件</h2>
       <p>输出文件名由 <code>build_output_stem()</code> 构造，包含源 Excel 文件名、sheet 名、车型、电压、转向、状态和输出类型。</p>
+      <div class="teaching-card">
+        <p class="teaching-title">输出命名读图路线：文件名为什么这样拼？</p>
+        <p class="teaching-question">输出名要同时满足“用户能识别来源”和“公开文档不泄露真实项目”。程序会从当前文件、sheet 和运行状态拼出稳定的匿名化结果名。</p>
+        <div class="teaching-steps">
+          <div class="teaching-step"><strong><span class="step-no">1</span>来源字段</strong><p>源 Excel 名称和 sheet 名称标识数据来源。</p><p><code>VehicleCode</code>、平均电压、转向和工况标识测试条件。</p></div>
+          <div class="teaching-step"><strong><span class="step-no">2</span>输出类型</strong><p>MAP 图追加 <code>MCU/Motor/System EfficiencyMAP</code>。</p><p>占比结果追加 <code>效率占比.xlsx/png</code>。</p></div>
+          <div class="teaching-step"><strong><span class="step-no">3</span>文件名清理</strong><p>保留中文、字母、数字、下划线、点和短横线。</p><p>其它字符替换为下划线，连续下划线折叠。</p></div>
+        </div>
+        <p class="teaching-note">重点：README 和 docs 只能写匿名示例，例如“示例数据”和“车型A”，不能出现真实文件名、项目代号或电压平台。</p>
+      </div>
       <pre><code>示例数据_Sheet1_车型A-500V-正转驱动_MCUEfficiencyMAP.png
 示例数据_Sheet1_车型A-500V-正转驱动_效率占比.xlsx
 示例数据_Sheet1_车型A-500V-正转驱动_效率占比.png</code></pre>
@@ -409,14 +971,45 @@
 
     <section id="build">
       <h2>11. 编译版实现</h2>
-      <p>打包入口是 <code>build_exe.bat</code> 和 <code>build_script.py</code>。批处理会激活本地虚拟环境并调用 Python 打包脚本。</p>
+      <p>打包入口是 <code>build_exe.bat</code> 和 <code>build_script.py</code>。脚本会强制使用项目虚拟环境 <code>venv\Scripts\python.exe</code>，避免全局 Python 环境把无关大型库收进发布包。</p>
       <pre><code>python -m PyInstaller --noconfirm --onedir --windowed --name MotorEffMAP --clean run.py</code></pre>
+      <div class="diagram">
+        <svg width="1040" height="250" viewBox="0 0 1040 250" role="img" aria-label="打包流程图">
+          <defs><marker id="arrow10" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L9,3 z" fill="#64748b"></path></marker></defs>
+          <rect class="box box-blue" x="35" y="95" width="135" height="58"></rect><text x="102" y="120" text-anchor="middle">启动脚本</text><text x="102" y="140" text-anchor="middle">build_script</text>
+          <rect class="box" x="210" y="95" width="135" height="58"></rect><text x="277" y="120" text-anchor="middle">确认 venv</text><text x="277" y="140" text-anchor="middle">必要时重启</text>
+          <rect class="box" x="385" y="95" width="135" height="58"></rect><text x="452" y="120" text-anchor="middle">准备 ico</text><text x="452" y="140" text-anchor="middle">不再转换 PNG</text>
+          <rect class="box" x="560" y="95" width="135" height="58"></rect><text x="627" y="120" text-anchor="middle">PyInstaller</text><text x="627" y="140" text-anchor="middle">onedir</text>
+          <rect class="box" x="735" y="58" width="135" height="58"></rect><text x="802" y="83" text-anchor="middle">按版本重命名</text><text x="802" y="103" text-anchor="middle">dist 目录</text>
+          <rect class="box box-green" x="735" y="145" width="135" height="58"></rect><text x="802" y="170" text-anchor="middle">复制配置</text><text x="802" y="190" text-anchor="middle">INI/version/ico</text>
+          <rect class="box box-orange" x="900" y="95" width="115" height="58"></rect><text x="957" y="120" text-anchor="middle">完整性检查</text><text x="957" y="140" text-anchor="middle">体积统计</text>
+          <path class="arrow" marker-end="url(#arrow10)" d="M170 124 H210"></path>
+          <path class="arrow" marker-end="url(#arrow10)" d="M345 124 H385"></path>
+          <path class="arrow" marker-end="url(#arrow10)" d="M520 124 H560"></path>
+          <path class="arrow" marker-end="url(#arrow10)" d="M695 114 C715 114,715 87,735 87"></path>
+          <path class="arrow" marker-end="url(#arrow10)" d="M802 116 V145"></path>
+          <path class="arrow" marker-end="url(#arrow10)" d="M870 174 C890 174,880 124,900 124"></path>
+        </svg>
+        <div class="caption">图 13：构建流程以项目 venv 为准，输出目录按 version.ini 命名。</div>
+        <div class="teaching-card">
+          <p class="teaching-title">图 13 读图路线：编译版文件夹是怎么生成的？</p>
+          <p class="teaching-question">这张图回答的是：打包为什么必须使用项目 venv，版本化目录名从哪里来，哪些资源必须复制到 exe 同级。</p>
+          <div class="teaching-steps">
+            <div class="teaching-step"><strong><span class="step-no">1</span>确认构建环境</strong><p><code>build_script.py</code> 强制使用 <code>venv\Scripts\python.exe</code>。</p><p>避免全局 Python 把无关大型库打进发布包。</p></div>
+            <div class="teaching-step"><strong><span class="step-no">2</span>执行 PyInstaller</strong><p>使用现有 <code>MotorEffMAP.ico</code>，不再每次转换图标。</p><p>生成 onedir 目录后按版本重命名。</p></div>
+            <div class="teaching-step"><strong><span class="step-no">3</span>复制和检查资源</strong><p>复制 <code>MotorEffMAP.ini</code>、<code>version.ini</code>、图标。</p><p>检查 exe、配置和版本文件是否存在，并输出体积统计。</p></div>
+          </div>
+          <p class="teaching-note">重点：发布目录名称来自 <code>version.ini</code>，格式类似 <code>MotorEffMAP_20260611-V1.2</code>。</p>
+        </div>
+      </div>
       <p>构建完成后的目录结构：</p>
-      <pre><code>dist/MotorEffMAP/
+      <pre><code>dist/MotorEffMAP_20260611-V1.2/
 ├── MotorEffMAP.exe
 ├── MotorEffMAP.ini
+├── version.ini
 └── MotorEffMAP.ico</code></pre>
       <p>编译版运行时，程序从 <code>MotorEffMAP.exe</code> 同级目录读取 <code>MotorEffMAP.ini</code>。</p>
+      <p>构建后会清理当前程序不用的 Qt QML/Quick/PDF/VirtualKeyboard 和翻译资源，并检查 exe、INI、version 文件是否存在。</p>
     </section>
 
     <section id="debug">
@@ -430,7 +1023,9 @@
           <tr><td>提示网格过大</td><td>网格步长太小，或包络线异常。</td><td>增大网格步长，检查数据。</td></tr>
           <tr><td>图为空或占比为空</td><td>有效数据被全部过滤，或效率列无法转换为数字。</td><td>检查 Excel 数据和配置列名。</td></tr>
           <tr><td>编译版找不到配置</td><td>配置文件不在 exe 同级目录。</td><td>把 <code>MotorEffMAP.ini</code> 放到 <code>MotorEffMAP.exe</code> 同目录。</td></tr>
-          <tr><td>中文乱码</td><td>配置文件编码与编辑器不兼容。</td><td>优先用程序配置页编辑，或使用支持 GB18030/UTF-8 的编辑器。</td></tr>
+          <tr><td>中文乱码</td><td>文件不是 UTF-8 BOM，或被旧编辑器另存为其它编码。</td><td>用程序配置页保存一次，或用 VSCode 转为 UTF-8 with BOM。</td></tr>
+          <tr><td>关闭 MAP 后界面仍显示旧图</td><td>需要确认当前运行入口已读取最新 INI。</td><td>保存并重载配置，必要时重启程序；当前版本手动视图会重新读取 INI。</td></tr>
+          <tr><td>构建包体积明显变大</td><td>PyInstaller 可能使用了全局 Python 或误收集大型库。</td><td>确认构建日志中的 Python environment 为项目 <code>venv</code>。</td></tr>
         </tbody>
       </table>
     </section>
@@ -445,6 +1040,16 @@
         <li>修改 <code>docs/program-implementation.md</code> 后，应同步修改 <code>docs/program-implementation.html</code>。</li>
         <li>修改配置字段时，应同步更新 <code>README.md</code> 和本文档配置表。</li>
       </ul>
+      <table>
+        <thead><tr><th>修改类型</th><th>必查文件</th><th>必跑验证</th></tr></thead>
+        <tbody>
+          <tr><td>新增或删除配置项</td><td><code>MotorEffMAP.ini</code>、<code>MotorEffMAP_GUI.py</code>、README、本文档</td><td>配置页保存、<code>git diff --check</code></td></tr>
+          <tr><td>修改数据清洗或插值</td><td><code>MotorEffMAP_Logic.py</code>、测试、本文档第 8 章</td><td>单元测试、目标 Excel 回归样本</td></tr>
+          <tr><td>修改图形版式</td><td><code>MotorEffMAP_GUI.py</code>、本文档第 9 章</td><td>GUI 显示比例、保存 PNG 比例</td></tr>
+          <tr><td>修改打包流程</td><td><code>build_script.py</code>、<code>build_exe.bat</code>、README、本文档第 11 章</td><td>构建、exe 启动烟测、体积统计</td></tr>
+          <tr><td>修改输出命名</td><td><code>build_output_stem()</code>、README、本文档第 10 章</td><td>文件名匿名示例检查、非法字符测试</td></tr>
+        </tbody>
+      </table>
     </section>
   </main>
   <footer>
