@@ -1,0 +1,14 @@
+MotorEffMAP.ini text eol=lf
+MotorEffMAP_GUI.py text eol=lf
+MotorEffMAP_Logic.py text eol=lf
+.gitignore text eol=lf
+.gitattributes text eol=lf
+README.md text eol=lf
+requirements.txt text eol=lf
+build_script.py text eol=lf
+build_exe.bat text eol=crlf
+run.py text eol=lf
+version.ini text eol=lf
+docs/** text eol=lf
+tasks/** text eol=lf
+tests/** text eol=lf

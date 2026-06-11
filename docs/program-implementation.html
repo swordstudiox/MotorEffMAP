@@ -1,0 +1,455 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MotorEffMAP 程序实现文档</title>
+  <style>
+    :root {
+      --ink: #1f2933;
+      --muted: #5f6b7a;
+      --line: #d8dee6;
+      --soft: #f5f7fa;
+      --panel: #ffffff;
+      --blue: #2563eb;
+      --green: #16803c;
+      --orange: #b45309;
+      --magenta: #a21caf;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: #eef2f7;
+      font-family: "Microsoft YaHei", "Segoe UI", Arial, sans-serif;
+      line-height: 1.65;
+    }
+    .page {
+      max-width: 1180px;
+      margin: 0 auto;
+      background: var(--panel);
+      min-height: 100vh;
+      box-shadow: 0 0 30px rgba(31, 41, 51, 0.08);
+    }
+    header {
+      padding: 44px 52px 28px;
+      background: #ffffff;
+      border-bottom: 1px solid var(--line);
+    }
+    h1 {
+      margin: 0 0 10px;
+      font-size: 34px;
+      letter-spacing: 0;
+    }
+    header p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 15px;
+    }
+    main { padding: 28px 52px 60px; }
+    nav {
+      padding: 18px 22px;
+      background: var(--soft);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      margin-bottom: 28px;
+    }
+    nav a {
+      display: inline-block;
+      margin: 4px 12px 4px 0;
+      color: var(--blue);
+      text-decoration: none;
+      font-size: 14px;
+    }
+    h2 {
+      margin-top: 34px;
+      padding-top: 10px;
+      border-top: 1px solid var(--line);
+      font-size: 24px;
+    }
+    h3 {
+      margin-top: 26px;
+      font-size: 18px;
+    }
+    p { margin: 10px 0; }
+    code {
+      background: #edf2f7;
+      border: 1px solid #dbe3ec;
+      padding: 1px 5px;
+      border-radius: 4px;
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 0.94em;
+    }
+    pre {
+      background: #111827;
+      color: #e5e7eb;
+      padding: 16px;
+      border-radius: 8px;
+      overflow: auto;
+      line-height: 1.5;
+    }
+    pre code {
+      background: transparent;
+      border: 0;
+      padding: 0;
+      color: inherit;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 14px 0 22px;
+      font-size: 14px;
+    }
+    th, td {
+      border: 1px solid var(--line);
+      padding: 9px 10px;
+      vertical-align: top;
+    }
+    th {
+      background: var(--soft);
+      text-align: left;
+      white-space: nowrap;
+    }
+    ul { padding-left: 24px; }
+    .note {
+      border-left: 4px solid var(--blue);
+      background: #eff6ff;
+      padding: 12px 14px;
+      margin: 14px 0;
+      color: #1e3a8a;
+    }
+    .diagram {
+      margin: 18px 0 26px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fbfcfe;
+      padding: 14px;
+      overflow-x: auto;
+    }
+    .caption {
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 13px;
+      text-align: center;
+    }
+    svg text {
+      font-family: "Microsoft YaHei", "Segoe UI", Arial, sans-serif;
+      font-size: 13px;
+      fill: var(--ink);
+    }
+    .box { fill: #ffffff; stroke: #94a3b8; stroke-width: 1.3; rx: 8; }
+    .box-blue { fill: #eff6ff; stroke: #60a5fa; }
+    .box-green { fill: #ecfdf5; stroke: #4ade80; }
+    .box-orange { fill: #fff7ed; stroke: #fb923c; }
+    .box-purple { fill: #faf5ff; stroke: #c084fc; }
+    .arrow { stroke: #64748b; stroke-width: 1.6; fill: none; marker-end: url(#arrow); }
+    footer {
+      padding: 20px 52px 42px;
+      color: var(--muted);
+      border-top: 1px solid var(--line);
+      font-size: 13px;
+    }
+    @media (max-width: 760px) {
+      header, main, footer { padding-left: 20px; padding-right: 20px; }
+      h1 { font-size: 28px; }
+      table { font-size: 13px; }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+  <header>
+    <h1>MotorEffMAP 程序实现文档</h1>
+    <p>Markdown 源文档：<code>docs/program-implementation.md</code>。本文档为纯离线 HTML 版，不依赖外部 CDN。</p>
+  </header>
+  <main>
+    <nav>
+      <a href="#intro">项目定位</a>
+      <a href="#files">文件结构</a>
+      <a href="#arch">总体架构</a>
+      <a href="#flow">数据流</a>
+      <a href="#gui">GUI 层</a>
+      <a href="#config">配置</a>
+      <a href="#excel">Excel 输入</a>
+      <a href="#logic">逻辑层</a>
+      <a href="#plot">绘图</a>
+      <a href="#output">输出</a>
+      <a href="#build">编译版</a>
+      <a href="#debug">排错</a>
+      <a href="#maintenance">维护注意事项</a>
+    </nav>
+
+    <section id="intro">
+      <h2>1. 项目定位</h2>
+      <p>MotorEffMAP 是一个用于绘制电驱系统效率 MAP 的 Python 桌面程序。用户通过 Excel 导入电机/电控测试数据，通过 <code>MotorEffMAP.ini</code> 配置列名和绘图参数，程序批量输出 MCU、电机、系统效率 MAP，以及效率区域占比结果。</p>
+      <ul>
+        <li>GUI：PySide6。</li>
+        <li>数据读取：pandas、openpyxl、xlrd。</li>
+        <li>数值计算：numpy、scipy。</li>
+        <li>绘图：matplotlib。</li>
+      </ul>
+    </section>
+
+    <section id="files">
+      <h2>2. 文件结构</h2>
+      <table>
+        <thead><tr><th>路径</th><th>责任</th></tr></thead>
+        <tbody>
+          <tr><td><code>run.py</code></td><td>应用入口，创建 QApplication，设置图标、字体和 matplotlib 字体，再显示主窗口。</td></tr>
+          <tr><td><code>MotorEffMAP_GUI.py</code></td><td>GUI 主体、配置页、文件选择、批量处理、绘图显示、保存输出和错误提示。</td></tr>
+          <tr><td><code>MotorEffMAP_Logic.py</code></td><td>数据读取、列映射、清洗、归一化、包络线、插值网格、效率区域占比计算。</td></tr>
+          <tr><td><code>MotorEffMAP.ini</code></td><td>用户配置文件。源码运行时放在项目根目录；编译版运行时放在 exe 同级目录。</td></tr>
+          <tr><td><code>requirements.txt</code></td><td>源码运行依赖。</td></tr>
+          <tr><td><code>build_script.py</code></td><td>PyInstaller 打包脚本，生成 <code>dist/MotorEffMAP/MotorEffMAP.exe</code> 并复制配置文件。</td></tr>
+          <tr><td><code>build_exe.bat</code></td><td>Windows 一键打包入口，自动调用 <code>build_script.py</code>。</td></tr>
+          <tr><td><code>README.md</code></td><td>用户快速上手、下载、配置、运行和打包说明。</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="arch">
+      <h2>3. 总体架构</h2>
+      <div class="diagram">
+        <svg width="1040" height="260" viewBox="0 0 1040 260" role="img" aria-label="MotorEffMAP 架构图">
+          <defs>
+            <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+              <path d="M0,0 L0,6 L9,3 z" fill="#64748b"></path>
+            </marker>
+          </defs>
+          <rect class="box box-blue" x="30" y="96" width="120" height="58"></rect>
+          <text x="90" y="121" text-anchor="middle">用户</text>
+          <text x="90" y="141" text-anchor="middle">操作界面</text>
+
+          <rect class="box box-green" x="210" y="48" width="180" height="78"></rect>
+          <text x="300" y="76" text-anchor="middle">MotorEffMAP_GUI.py</text>
+          <text x="300" y="98" text-anchor="middle">PySide6 / matplotlib</text>
+
+          <rect class="box box-orange" x="210" y="158" width="180" height="58"></rect>
+          <text x="300" y="183" text-anchor="middle">MotorEffMAP.ini</text>
+          <text x="300" y="203" text-anchor="middle">用户配置</text>
+
+          <rect class="box box-purple" x="455" y="84" width="190" height="78"></rect>
+          <text x="550" y="112" text-anchor="middle">MotorEffMAP_Logic.py</text>
+          <text x="550" y="134" text-anchor="middle">清洗 / 包络线 / 插值</text>
+
+          <rect class="box" x="710" y="24" width="145" height="58"></rect>
+          <text x="782" y="49" text-anchor="middle">Excel 工作簿</text>
+          <text x="782" y="69" text-anchor="middle">多文件 / 多 Sheet</text>
+
+          <rect class="box" x="710" y="108" width="145" height="58"></rect>
+          <text x="782" y="133" text-anchor="middle">numpy / scipy</text>
+          <text x="782" y="153" text-anchor="middle">网格与插值</text>
+
+          <rect class="box box-green" x="890" y="84" width="120" height="78"></rect>
+          <text x="950" y="112" text-anchor="middle">输出文件</text>
+          <text x="950" y="134" text-anchor="middle">PNG / XLSX</text>
+
+          <path class="arrow" d="M150 125 H210"></path>
+          <path class="arrow" d="M300 126 V158"></path>
+          <path class="arrow" d="M390 88 H455"></path>
+          <path class="arrow" d="M390 188 C430 188,430 142,455 142"></path>
+          <path class="arrow" d="M645 112 C680 112,680 53,710 53"></path>
+          <path class="arrow" d="M645 136 H710"></path>
+          <path class="arrow" d="M855 137 H890"></path>
+        </svg>
+        <div class="caption">图 1：GUI 负责交互和输出，逻辑层负责数据处理，配置文件作为用户接口。</div>
+      </div>
+      <p>GUI 与逻辑层的边界是当前实现的核心：GUI 不直接做数值计算，逻辑层不直接操作控件。这样既便于测试，也便于将来替换界面或增加命令行入口。</p>
+    </section>
+
+    <section id="flow">
+      <h2>4. 运行时数据流</h2>
+      <div class="diagram">
+        <svg width="1040" height="320" viewBox="0 0 1040 320" role="img" aria-label="数据处理流程图">
+          <defs>
+            <marker id="arrow2" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+              <path d="M0,0 L0,6 L9,3 z" fill="#64748b"></path>
+            </marker>
+          </defs>
+          <g>
+            <rect class="box box-blue" x="30" y="42" width="145" height="54"></rect><text x="102" y="74" text-anchor="middle">选择 Excel</text>
+            <rect class="box" x="220" y="42" width="170" height="54"></rect><text x="305" y="64" text-anchor="middle">读取所有 Sheet</text><text x="305" y="84" text-anchor="middle">read_excel</text>
+            <rect class="box" x="435" y="42" width="165" height="54"></rect><text x="517" y="64" text-anchor="middle">展开 file + sheet</text><text x="517" y="84" text-anchor="middle">文件列表</text>
+            <rect class="box box-orange" x="645" y="42" width="165" height="54"></rect><text x="727" y="64" text-anchor="middle">filter_data</text><text x="727" y="84" text-anchor="middle">列映射</text>
+            <rect class="box box-orange" x="855" y="42" width="155" height="54"></rect><text x="932" y="64" text-anchor="middle">normalization</text><text x="932" y="84" text-anchor="middle">清洗归一化</text>
+          </g>
+          <g>
+            <rect class="box box-purple" x="120" y="155" width="185" height="58"></rect><text x="212" y="178" text-anchor="middle">外特性包络线</text><text x="212" y="198" text-anchor="middle">PCHIP / 线性</text>
+            <rect class="box box-purple" x="350" y="155" width="185" height="58"></rect><text x="442" y="178" text-anchor="middle">process_map_data</text><text x="442" y="198" text-anchor="middle">网格与插值</text>
+            <rect class="box box-green" x="580" y="126" width="185" height="58"></rect><text x="672" y="149" text-anchor="middle">switch_plot</text><text x="672" y="169" text-anchor="middle">保存 MAP PNG</text>
+            <rect class="box box-green" x="580" y="210" width="185" height="58"></rect><text x="672" y="233" text-anchor="middle">calculate_area_ratios</text><text x="672" y="253" text-anchor="middle">区域占比</text>
+            <rect class="box box-blue" x="810" y="210" width="185" height="58"></rect><text x="902" y="233" text-anchor="middle">保存占比结果</text><text x="902" y="253" text-anchor="middle">XLSX / PNG</text>
+          </g>
+          <path class="arrow" marker-end="url(#arrow2)" d="M175 69 H220"></path>
+          <path class="arrow" marker-end="url(#arrow2)" d="M390 69 H435"></path>
+          <path class="arrow" marker-end="url(#arrow2)" d="M600 69 H645"></path>
+          <path class="arrow" marker-end="url(#arrow2)" d="M810 69 H855"></path>
+          <path class="arrow" marker-end="url(#arrow2)" d="M932 96 C932 124,240 124,212 155"></path>
+          <path class="arrow" marker-end="url(#arrow2)" d="M305 184 H350"></path>
+          <path class="arrow" marker-end="url(#arrow2)" d="M535 178 H580"></path>
+          <path class="arrow" marker-end="url(#arrow2)" d="M535 195 C555 195,555 239,580 239"></path>
+          <path class="arrow" marker-end="url(#arrow2)" d="M765 239 H810"></path>
+        </svg>
+        <div class="caption">图 2：从 Excel 到 MAP 图、区域占比 Excel 和占比图的完整处理链路。</div>
+      </div>
+      <p>处理流程由 <code>MainWindow.run_process_all()</code> 启动。程序遍历所有 Excel 文件和所有 sheet，每个 sheet 都会按同一配置完成清洗、包络线、插值、绘图和保存。</p>
+    </section>
+
+    <section id="gui">
+      <h2>5. GUI 层实现</h2>
+      <h3>5.1 主窗口</h3>
+      <p><code>MainWindow</code> 初始化时会判断运行模式。源码运行时从项目根目录读取 <code>MotorEffMAP.ini</code>，编译版运行时从 <code>MotorEffMAP.exe</code> 同级目录读取配置。</p>
+      <p>界面包含两个页签：<code>处理与分析</code> 和 <code>配置</code>。底部固定显示日志区域和进度条。</p>
+
+      <h3>5.2 处理页</h3>
+      <table>
+        <thead><tr><th>控件</th><th>行为</th></tr></thead>
+        <tbody>
+          <tr><td>选择数据文件</td><td>打开文件选择框，支持 <code>.xls</code> / <code>.xlsx</code>。</td></tr>
+          <tr><td>文件列表</td><td>每个 Excel 的每个 sheet 会展开成一个条目。</td></tr>
+          <tr><td>处理并保存所有</td><td>批量处理文件列表中所有条目。</td></tr>
+          <tr><td>MCU效率 / 电机效率 / 系统效率</td><td>对当前数据切换显示对应 MAP。</td></tr>
+          <tr><td>效率占比</td><td>对当前数据绘制效率区域占比曲线。</td></tr>
+        </tbody>
+      </table>
+
+      <h3>5.3 配置页</h3>
+      <p>配置页读取 INI 后动态生成表单。保存时收集输入框值，调用 <code>write_ini_file()</code> 写回配置，再重新加载配置，使逻辑层立即使用新参数。</p>
+      <div class="note">配置文件支持无 section 的传统写法。程序会临时补 <code>[DEFAULT]</code> 再解析，但写回时仍尽量保留原配置文件中的注释结构。</div>
+
+      <h3>5.4 错误处理</h3>
+      <p>GUI 层通过 <code>handle_processing_error()</code> 统一处理可预期错误：写日志、进度归零、弹出提示，并停止后续输出，避免生成半成品。</p>
+    </section>
+
+    <section id="config">
+      <h2>6. 配置文件实现</h2>
+      <table>
+        <thead><tr><th>配置项</th><th>用途</th><th>示例</th></tr></thead>
+        <tbody>
+          <tr><td><code>VehicleCode</code></td><td>车型或项目代号，用于图标题和输出文件名。</td><td><code>KK</code></td></tr>
+          <tr><td><code>Speed</code></td><td>Excel 中转速列名。</td><td><code>转速[rpm]</code></td></tr>
+          <tr><td><code>Toqrue</code></td><td>Excel 中扭矩列名。键名沿用历史拼写。</td><td><code>扭矩[Nm]</code></td></tr>
+          <tr><td><code>P_Motor</code></td><td>Excel 中电机功率列名。</td><td><code>功率[kW]</code></td></tr>
+          <tr><td><code>Eff_MCU</code></td><td>Excel 中控制器效率列名。</td><td><code>效1</code></td></tr>
+          <tr><td><code>Eff_Motor</code></td><td>Excel 中电机效率列名。</td><td><code>效2</code></td></tr>
+          <tr><td><code>Eff_SYS</code></td><td>Excel 中系统效率列名。</td><td><code>效3</code></td></tr>
+          <tr><td><code>U_dc</code></td><td>Excel 中母线电压列名。</td><td><code>Udc4</code></td></tr>
+          <tr><td><code>customUdc</code></td><td>固定电压值。填写后优先使用该值。</td><td><code>530</code></td></tr>
+          <tr><td><code>MCUMAP</code> / <code>MotorMAP</code> / <code>SYSMAP</code></td><td>是否输出对应效率 MAP，<code>1</code> 输出，<code>0</code> 不输出。</td><td><code>1</code></td></tr>
+          <tr><td><code>EffMAPStep</code></td><td>效率等高线和占比阈值，支持逗号、分号或空格分隔。</td><td><code>80,85,90,95,99</code></td></tr>
+          <tr><td><code>PowerMAPStep</code></td><td>功率等高线值。</td><td><code>5,10,15,20</code></td></tr>
+          <tr><td><code>xstep</code> / <code>ystep</code></td><td>转速轴、扭矩轴刻度间隔。</td><td><code>500</code> / <code>20</code></td></tr>
+          <tr><td><code>StartSpeed</code> / <code>StartTorque</code></td><td>效率区域统计起始边界。</td><td><code>0</code> / <code>0</code></td></tr>
+          <tr><td><code>SpeedGrid</code> / <code>TorqueGrid</code></td><td>插值网格步长，必须大于 0。</td><td><code>5</code> / <code>0.5</code></td></tr>
+          <tr><td><code>MaxGridPoints</code></td><td>最大网格点数安全上限，限制网格行数乘以网格列数，防止步长过小导致内存过大。</td><td><code>5000000</code></td></tr>
+          <tr><td><code>customSpeedDirection</code></td><td>自定义转向名称。留空时由转速均值自动判断；填写后覆盖自动判断结果。</td><td><code>正转</code></td></tr>
+          <tr><td><code>customMotionState</code></td><td>自定义工况状态。留空时由功率均值自动判断；填写后覆盖自动判断结果。</td><td><code>驱动</code></td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="excel">
+      <h2>7. 输入 Excel 要求</h2>
+      <p>程序使用 <code>pandas.read_excel(file_path, sheet_name=None)</code> 读取所有 sheet。每个 sheet 的第一行会作为列名。</p>
+      <ul>
+        <li>第一行是列名，并且列名与 <code>MotorEffMAP.ini</code> 中配置完全一致。</li>
+        <li>转速、扭矩、功率、效率、电压列应能转换为数字。</li>
+        <li>可以存在空行，程序会在归一化阶段删除核心列为空的数据。</li>
+        <li>可以存在单位行或文本行，只要核心列无法转成数字，就会变成 NaN 并被删除。</li>
+        <li>同一 sheet 建议只包含同一转向、同一电动/发电状态、同一电压等级的数据。</li>
+      </ul>
+      <p>缺失必需列时，程序会明确失败，不再用全 0 数据代替。</p>
+    </section>
+
+    <section id="logic">
+      <h2>8. 逻辑层实现</h2>
+      <h3>8.1 数据加载</h3>
+      <pre><code>self.sheets_dict = pd.read_excel(file_path, sheet_name=None)</code></pre>
+      <p>返回结构是 <code>{sheet_name: DataFrame}</code>。GUI 会把每个 sheet 加入文件列表，处理时通过 <code>set_current_sheet(sheet_name)</code> 切换当前 DataFrame。</p>
+
+      <h3>8.2 列映射和基础判断</h3>
+      <p><code>filter_data()</code> 会去掉列名首尾空格，用 <code>pd.to_numeric(..., errors='coerce')</code> 转为数字，保留 NaN，不把空值填成 0。</p>
+      <table>
+        <thead><tr><th>判断项</th><th>规则</th></tr></thead>
+        <tbody>
+          <tr><td>转向</td><td>转速均值 <code>&gt; 0</code> 为 <code>正转</code>，否则为 <code>反转</code>。</td></tr>
+          <tr><td>状态</td><td>功率均值 <code>&gt; 0</code> 为 <code>电动</code>，否则为 <code>发电</code>。</td></tr>
+        </tbody>
+      </table>
+
+      <h3>8.3 归一化</h3>
+      <p><code>normalization()</code> 删除核心列存在 NaN 的行，将相邻差值不超过 6 rpm 的转速合并为平均转速，再过滤效率值，只保留 <code>[0, 100)</code>。</p>
+
+      <h3>8.4 外特性包络线</h3>
+      <p>程序按转速分组取最大扭矩，再根据点数选择常数曲线、线性插值或 <code>PchipInterpolator</code> 保形插值。插值结果会限制在 <code>[0, 观测最大扭矩 * 1.05]</code>，防止过冲导致网格异常变大。</p>
+
+      <h3>8.5 网格和插值</h3>
+      <p>转速轴从 0 到最大转速按 <code>SpeedGrid</code> 生成。扭矩轴按每个转速列独立生成，从 0 到外特性包络线扭矩，再通过 <code>griddata(..., method='linear')</code> 插值效率和功率。</p>
+      <pre><code>XI, YI, ZI_Power, ZI_Eff, mask_valid_geo = process_map_data("Eff_MCU")</code></pre>
+
+      <h3>8.6 效率区域占比</h3>
+      <p>当前 GUI 使用 <code>mask_valid_geo</code> 作为分母，因此效率区域占比按几何运行区域计算。默认 <code>StartSpeed=0</code>、<code>StartTorque=0</code> 时，从 <code>0rpm / 0Nm</code> 开始。</p>
+      <pre><code>Ratio(level) = count(z_eff &gt;= level) / count(geo_mask) * 100</code></pre>
+    </section>
+
+    <section id="plot">
+      <h2>9. 绘图实现</h2>
+      <p><code>switch_plot()</code> 负责绘制 MCU、电机或系统效率 MAP。效率使用 <code>contourf</code> 填色，效率等高线为黑色，功率等高线为绿色。保存 PNG 时使用约 25cm x 20cm 的图像比例和 200 DPI。</p>
+      <p><code>process_area_ratios()</code> 会保存效率区域占比 Excel 和占比 PNG。占比图中 MCU 使用蓝色星标线，电机使用绿色圆点线，系统使用洋红色加号线。</p>
+    </section>
+
+    <section id="output">
+      <h2>10. 输出文件</h2>
+      <p>输出文件名由 <code>build_output_stem()</code> 构造，包含源 Excel 文件名、sheet 名、车型、电压、转向、状态和输出类型。</p>
+      <pre><code>示例数据_Sheet1_车型A-500V-正转驱动_MCUEfficiencyMAP.png
+示例数据_Sheet1_车型A-500V-正转驱动_效率占比.xlsx
+示例数据_Sheet1_车型A-500V-正转驱动_效率占比.png</code></pre>
+      <p>文件名会保留中文、字母、数字、下划线、点和短横线，其他字符替换为下划线。</p>
+    </section>
+
+    <section id="build">
+      <h2>11. 编译版实现</h2>
+      <p>打包入口是 <code>build_exe.bat</code> 和 <code>build_script.py</code>。批处理会激活本地虚拟环境并调用 Python 打包脚本。</p>
+      <pre><code>python -m PyInstaller --noconfirm --onedir --windowed --name MotorEffMAP --clean run.py</code></pre>
+      <p>构建完成后的目录结构：</p>
+      <pre><code>dist/MotorEffMAP/
+├── MotorEffMAP.exe
+├── MotorEffMAP.ini
+└── MotorEffMAP.ico</code></pre>
+      <p>编译版运行时，程序从 <code>MotorEffMAP.exe</code> 同级目录读取 <code>MotorEffMAP.ini</code>。</p>
+    </section>
+
+    <section id="debug">
+      <h2>12. 日志和排错</h2>
+      <p>程序运行日志写入 <code>MotorEffMAP.log</code>，GUI 底部也会显示实时日志。</p>
+      <table>
+        <thead><tr><th>现象</th><th>常见原因</th><th>处理</th></tr></thead>
+        <tbody>
+          <tr><td>提示找不到列</td><td>配置列名与 Excel 第一行不一致。</td><td>修改配置，使列名完全一致。</td></tr>
+          <tr><td>提示 SpeedGrid 必须大于 0</td><td>网格步长为空、0、负数或非数字。</td><td>设置为正数，例如 <code>5</code>。</td></tr>
+          <tr><td>提示网格过大</td><td>网格步长太小，或包络线异常。</td><td>增大网格步长，检查数据。</td></tr>
+          <tr><td>图为空或占比为空</td><td>有效数据被全部过滤，或效率列无法转换为数字。</td><td>检查 Excel 数据和配置列名。</td></tr>
+          <tr><td>编译版找不到配置</td><td>配置文件不在 exe 同级目录。</td><td>把 <code>MotorEffMAP.ini</code> 放到 <code>MotorEffMAP.exe</code> 同目录。</td></tr>
+          <tr><td>中文乱码</td><td>配置文件编码与编辑器不兼容。</td><td>优先用程序配置页编辑，或使用支持 GB18030/UTF-8 的编辑器。</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="maintenance">
+      <h2>13. 维护注意事项</h2>
+      <ul>
+        <li>不要把空数据填成 0。空行应保留为 NaN，再按核心列删除。</li>
+        <li>不要把缺失列静默替换为全 0。缺失列必须明确失败。</li>
+        <li>面积占比分母按几何运行区域计算，默认从 <code>0rpm / 0Nm</code> 开始。</li>
+        <li>GUI 调用逻辑层时必须捕获可预期的 <code>ValueError</code>，并转成用户提示。</li>
+        <li>修改 <code>docs/program-implementation.md</code> 后，应同步修改 <code>docs/program-implementation.html</code>。</li>
+        <li>修改配置字段时，应同步更新 <code>README.md</code> 和本文档配置表。</li>
+      </ul>
+    </section>
+  </main>
+  <footer>
+    MotorEffMAP 程序实现文档。最后同步对象：docs/program-implementation.md。
+  </footer>
+</div>
+</body>
+</html>
