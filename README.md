@@ -30,6 +30,7 @@ MotorEffMAP 是一个用于绘制电动汽车电机、电控、系统效率 MAP 
 | `requirements.txt` | 源码运行依赖。 |
 | `build_exe.bat` | Windows 一键打包脚本。 |
 | `build_script.py` | PyInstaller 打包逻辑。 |
+| `example/` | 示例数据和示例输出图片，可用于快速试运行和查看效果。 |
 | `docs/program-implementation.md` | 详细程序实现文档，供维护者和程序读取。 |
 | `docs/program-implementation.html` | 与 Markdown 同步的离线 HTML 文档，供用户查看。 |
 
@@ -93,6 +94,23 @@ python run.py
 ```
 
 源码运行时，程序会读取项目根目录下的 `MotorEffMAP.ini`。
+
+## 示例数据
+
+仓库中的 `example/` 目录提供了一组可直接试用的示例文件：
+
+| 文件 | 说明 |
+| --- | --- |
+| `example/示例_效率数据.xlsx` | 示例输入数据，可在程序中直接选择并处理。 |
+| `example/示例_效率数据_Sheet1_KK-630V-正转驱动_MCUEfficiencyMAP.png` | 示例生成的 MCU 效率 MAP。 |
+| `example/示例_效率数据_Sheet1_KK-630V-正转驱动_效率占比.xlsx` | 示例生成的效率区域占比表。 |
+| `example/示例_效率数据_Sheet1_KK-630V-正转驱动_效率占比.png` | 示例生成的效率区域占比图。 |
+
+示例图片使用仓库内相对路径引用，在 GitHub 等远程 Git 仓库页面中可以直接显示。
+
+## 示例效果
+
+![MCU 效率 MAP 示例](example/示例_效率数据_Sheet1_KK-630V-正转驱动_MCUEfficiencyMAP.png)
 
 ## Excel 数据要求
 
