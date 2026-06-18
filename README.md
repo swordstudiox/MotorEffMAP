@@ -95,12 +95,17 @@ python run.py
 
 源码运行时，程序会读取项目根目录下的 `MotorEffMAP.ini`。
 
+## 程序界面
+
+![MotorEffMAP 主界面](example/MotorEffMAP_主界面.png)
+
 ## 示例数据
 
 仓库中的 `example/` 目录提供了一组可直接试用的示例文件：
 
 | 文件 | 说明 |
 | --- | --- |
+| `example/MotorEffMAP_主界面.png` | 程序主界面截图。 |
 | `example/示例_效率数据.xlsx` | 示例输入数据，可在程序中直接选择并处理。 |
 | `example/示例_效率数据_Sheet1_KK-630V-正转驱动_MCUEfficiencyMAP.png` | 示例生成的 MCU 效率 MAP。 |
 | `example/示例_效率数据_Sheet1_KK-630V-正转驱动_效率占比.xlsx` | 示例生成的效率区域占比表。 |
