@@ -85,7 +85,7 @@ class MainWindow(QMainWindow):
     CONFIG_LABELS = {
         'VehicleCode': '车型代号',
         'Speed': '数据里的转速名称',
-        'Toqrue': '数据里的扭矩名称',
+        'Torque': '数据里的扭矩名称',
         'P_Motor': '数据里的功率名称',
         'Eff_MCU': '数据里的控制器效率名称',
         'Eff_Motor': '数据里的电机效率名称',

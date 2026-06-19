@@ -159,7 +159,7 @@ python run.py
 | 配置项 | 说明 |
 | --- | --- |
 | `Speed` | 转速列名。 |
-| `Toqrue` | 扭矩列名。注意键名历史拼写为 `Toqrue`，不要改成 `Torque`。 |
+| `Torque` | 扭矩列名。 |
 | `P_Motor` | 电机功率列名。 |
 | `Eff_MCU` | 控制器效率列名。 |
 | `Eff_Motor` | 电机效率列名。 |
@@ -172,7 +172,7 @@ python run.py
 ```ini
 VehicleCode = KK
 Speed = 转速[rpm]
-Toqrue = 扭矩[Nm]
+Torque = 扭矩[Nm]
 P_Motor = 功率[kW]
 Eff_MCU = 效1
 Eff_Motor = 效2

@@ -89,7 +89,7 @@ class MotorEffLogic:
         self.raw_df.columns = self.raw_df.columns.str.strip()
 
         logging.info(f"Excel 中发现的列: {list(self.raw_df.columns)}")
-        logging.info(f"配置键映射: Speed='{self.config.get('Speed')}', Torque='{self.config.get('Toqrue')}'")
+        logging.info(f"配置键映射: Speed='{self.config.get('Speed')}', Torque='{self.config.get('Torque')}'")
 
         missing_columns = []
 
@@ -121,7 +121,7 @@ class MotorEffLogic:
             return None
 
         speed_col = get_col('Speed')
-        torque_col = get_col('Toqrue') # 兼容现有 INI 键名拼写 'Toqrue'
+        torque_col = get_col('Torque')
         p_motor_col = get_col('P_Motor')
 
         efficiency_columns = {}

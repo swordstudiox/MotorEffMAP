@@ -505,7 +505,7 @@
         <tbody>
           <tr><td><code>VehicleCode</code></td><td>车型或项目代号，用于图标题和输出文件名。</td><td><code>KK</code></td></tr>
           <tr><td><code>Speed</code></td><td>Excel 中转速列名。</td><td><code>转速[rpm]</code></td></tr>
-          <tr><td><code>Toqrue</code></td><td>Excel 中扭矩列名。键名沿用历史拼写。</td><td><code>扭矩[Nm]</code></td></tr>
+          <tr><td><code>Torque</code></td><td>Excel 中扭矩列名。</td><td><code>扭矩[Nm]</code></td></tr>
           <tr><td><code>P_Motor</code></td><td>Excel 中电机功率列名。</td><td><code>功率[kW]</code></td></tr>
           <tr><td><code>Eff_MCU</code></td><td>Excel 中控制器效率列名。</td><td><code>效1</code></td></tr>
           <tr><td><code>Eff_Motor</code></td><td>Excel 中电机效率列名。</td><td><code>效2</code></td></tr>
@@ -556,7 +556,7 @@
           <p class="teaching-title">图 3 读图路线：Excel 需要哪些列才算能跑？</p>
           <p class="teaching-question">这张图回答的是：哪些列是基础必需列，哪些效率列是可选列，以及为什么不能要求 MCU、电机、系统效率三列全部填写。</p>
           <div class="teaching-steps">
-            <div class="teaching-step"><strong><span class="step-no">1</span>先查基础列</strong><p><code>Speed</code>、<code>Toqrue</code>、<code>P_Motor</code> 和电压来源必须可用。</p><p>缺基础列时没有坐标或功率，后续 MAP 无法成立。</p></div>
+            <div class="teaching-step"><strong><span class="step-no">1</span>先查基础列</strong><p><code>Speed</code>、<code>Torque</code>、<code>P_Motor</code> 和电压来源必须可用。</p><p>缺基础列时没有坐标或功率，后续 MAP 无法成立。</p></div>
             <div class="teaching-step"><strong><span class="step-no">2</span>再查效率列</strong><p><code>Eff_MCU</code>、<code>Eff_Motor</code>、<code>Eff_SYS</code> 按配置填写情况判断。</p><p>填了哪个、且对应开关开启，就处理哪个。</p></div>
             <div class="teaching-step"><strong><span class="step-no">3</span>最后决定输出</strong><p>至少一个效率类型可用即可继续。</p><p>不可用类型只跳过，不影响其它类型输出。</p></div>
           </div>
