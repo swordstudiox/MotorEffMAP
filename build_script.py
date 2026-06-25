@@ -4,11 +4,17 @@ import sys
 import shutil
 import configparser
 import re
+import importlib.util
 from pathlib import Path
 
 
 PROJECT_ROOT = Path(__file__).resolve().parent
 VENV_PYTHON = PROJECT_ROOT / "venv" / "Scripts" / "python.exe"
+
+HIDDEN_IMPORTS = [
+    "openpyxl",
+    "xlrd",
+]
 
 
 EXCLUDED_MODULES = [
@@ -106,6 +112,18 @@ def get_exclude_args():
     for module in EXCLUDED_MODULES:
         args.extend(["--exclude-module", module])
     return args
+
+
+def get_hidden_import_args():
+    return [f"--hidden-import={module}" for module in HIDDEN_IMPORTS]
+
+
+def project_path(*parts):
+    return PROJECT_ROOT.joinpath(*parts)
+
+
+def ensure_project_workdir():
+    os.chdir(PROJECT_ROOT)
 
 
 def get_dir_size(path):
@@ -236,6 +254,14 @@ def install_package(package):
     subprocess.check_call([sys.executable, "-m", "pip", "install", package])
 
 
+def ensure_pyinstaller_available():
+    if importlib.util.find_spec("PyInstaller") is None:
+        raise RuntimeError(
+            "未安装 pyinstaller。请先安装构建依赖，例如："
+            "venv\\Scripts\\python.exe -m pip install -r requirements-build.txt"
+        )
+
+
 def ensure_project_venv():
     if not VENV_PYTHON.exists():
         print("[ERROR] 未找到项目虚拟环境: venv\\Scripts\\python.exe")
@@ -255,6 +281,7 @@ def ensure_project_venv():
 
 
 def main():
+    ensure_project_workdir()
     ensure_project_venv()
 
     print("===================================================")
@@ -264,32 +291,34 @@ def main():
     # 1. Check and Install Dependencies
     print("[1/5] 检查依赖环境...")
     try:
-        import PyInstaller
-    except ImportError:
-        install_package("pyinstaller")
+        ensure_pyinstaller_available()
+    except RuntimeError as e:
+        print(f"[ERROR] {e}")
+        sys.exit(1)
 
     # 2. Icon Processing
     print("[2/5] 正在准备图标...")
     icon_param = []
-    icon_file = "MotorEffMAP.ico"
+    icon_file = project_path("MotorEffMAP.ico")
 
-    if os.path.exists(icon_file):
+    if icon_file.exists():
         icon_param = [f"--icon={icon_file}"]
-        print(f"使用现有图标: {icon_file}")
+        print(f"使用现有图标: {icon_file.name}")
     else:
-        print(f"[WARN] 未找到 {icon_file}，将使用默认图标。")
+        print(f"[WARN] 未找到 {icon_file.name}，将使用默认图标。")
 
     # 3. Clean previous build
     print("[3/5] 清理旧的构建文件...")
-    for folder in ["build", "dist"]:
-        if os.path.exists(folder):
+    for folder in [project_path("build"), project_path("dist")]:
+        if folder.exists():
             try:
                 shutil.rmtree(folder)
             except Exception as e:
                 print(f"[WARN] 无法清理 {folder}: {e}")
 
-    if os.path.exists("MotorEffMAP.spec"):
-        os.remove("MotorEffMAP.spec")
+    spec_file = project_path("MotorEffMAP.spec")
+    if spec_file.exists():
+        spec_file.unlink()
 
     # 4. Run PyInstaller
     print("[4/5] 正在编译 exe (可能需要几分钟)...")
@@ -301,7 +330,7 @@ def main():
         "--windowed",
         "--name", "MotorEffMAP",
         "--clean"
-    ] + icon_param + get_exclude_args() + ["run.py"]
+    ] + icon_param + get_exclude_args() + get_hidden_import_args() + [str(project_path("run.py"))]
 
     try:
         subprocess.check_call(cmd)
@@ -311,8 +340,8 @@ def main():
 
     # 5. Copy Resources
     print("[5/5] 复制配置文件...")
-    default_dist_dir = Path("dist") / "MotorEffMAP"
-    dist_dir = Path("dist") / get_dist_dir_name()
+    default_dist_dir = project_path("dist", "MotorEffMAP")
+    dist_dir = project_path("dist", get_dist_dir_name())
     if default_dist_dir != dist_dir:
         if dist_dir.exists():
             shutil.rmtree(dist_dir)
@@ -320,23 +349,24 @@ def main():
             default_dist_dir.rename(dist_dir)
             print(f"发布目录已命名为: {dist_dir}")
 
-    if not os.path.exists(dist_dir):
-        os.makedirs(dist_dir)
+    if not dist_dir.exists():
+        dist_dir.mkdir(parents=True)
 
     files_to_copy = ["MotorEffMAP.ini", "version.ini"]
     for file_name in files_to_copy:
-        if os.path.exists(file_name):
+        source = project_path(file_name)
+        if source.exists():
             try:
-                shutil.copy(file_name, dist_dir)
+                shutil.copy(source, dist_dir)
                 print(f"已复制: {file_name}")
             except Exception as e:
                 print(f"[WARN] 无法复制 {file_name}: {e}")
 
     # Copy icon for runtime window use
-    if os.path.exists(icon_file):
+    if icon_file.exists():
         try:
             shutil.copy(icon_file, dist_dir)
-            print(f"已复制图标文件: {icon_file}")
+            print(f"已复制图标文件: {icon_file.name}")
         except:
              pass
 

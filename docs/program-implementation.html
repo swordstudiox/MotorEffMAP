@@ -318,7 +318,7 @@
 
     <section id="intro">
       <h2>1. 项目定位</h2>
-      <p>MotorEffMAP 是一个用于绘制电驱系统效率 MAP 的 Python 桌面程序。用户通过 Excel 导入电机/电控测试数据，通过 <code>MotorEffMAP.ini</code> 配置列名和绘图参数，程序批量输出 MCU、电机、系统效率 MAP，以及效率区域占比结果。</p>
+      <p>MotorEffMAP 是一个用于绘制电驱系统效率 MAP 的 Python 桌面程序。用户通过 Excel 导入电机/电控测试数据，通过 <code>MotorEffMAP.ini</code> 配置列名和绘图参数，程序批量输出 MCU、电机、系统效率 MAP、转速-功率-效率 MAP、转速-扭矩-损耗 MAP、外特性曲线图，以及效率区域占比结果。</p>
       <ul>
         <li>GUI：PySide6。</li>
         <li>数据读取：pandas、openpyxl、xlrd。</li>
@@ -333,8 +333,20 @@
         <thead><tr><th>路径</th><th>责任</th></tr></thead>
         <tbody>
           <tr><td><code>run.py</code></td><td>应用入口，创建 QApplication，设置图标、字体和 matplotlib 字体，再显示主窗口。</td></tr>
-          <tr><td><code>MotorEffMAP_GUI.py</code></td><td>GUI 主体、配置页、文件选择、批量处理、绘图显示、保存输出和错误提示。</td></tr>
-          <tr><td><code>MotorEffMAP_Logic.py</code></td><td>数据读取、列映射、清洗、归一化、包络线、插值网格、效率区域占比计算。</td></tr>
+          <tr><td><code>MotorEffMAP_GUI.py</code></td><td>旧导入兼容入口，重新导出 <code>motor_eff_map.gui</code> 中的 GUI 类。</td></tr>
+          <tr><td><code>MotorEffMAP_Logic.py</code></td><td>旧导入兼容入口，重新导出 <code>motor_eff_map.logic.MotorEffLogic</code>。</td></tr>
+          <tr><td><code>motor_eff_map/gui/main_window.py</code></td><td>GUI 主体布局、配置刷新、轻量协调辅助和旧信号连接入口。</td></tr>
+          <tr><td><code>motor_eff_map/gui/config_schema.py</code></td><td>GUI 配置标签、输出开关、效率输出定义、默认配置和图形布局常量。</td></tr>
+          <tr><td><code>motor_eff_map/gui/widgets.py</code></td><td>日志控件、固定比例画布容器、页脚签名控件。</td></tr>
+          <tr><td><code>motor_eff_map/gui/config_editor.py</code></td><td>配置页相关的 INI 读取、默认值补齐、控件创建和写回。</td></tr>
+          <tr><td><code>motor_eff_map/gui/plot_helpers.py</code></td><td>figure 布局、等高线级别、masked contour 网格、坐标刻度和图像缓存。</td></tr>
+          <tr><td><code>motor_eff_map/gui/output_naming.py</code></td><td>输出文件名清洗和输出 stem 生成。</td></tr>
+          <tr><td><code>motor_eff_map/gui/processing_controller.py</code></td><td>文件选择、批量处理、单个 sheet 处理和运行状态编排。</td></tr>
+          <tr><td><code>motor_eff_map/gui/batch_worker.py</code></td><td>批处理后台 worker 和无 Qt 控件依赖的批量导出上下文。</td></tr>
+          <tr><td><code>motor_eff_map/gui/plotters/</code></td><td>按图类型拆分的效率 MAP、转速-功率 MAP、损耗 MAP、外特性和占比图绘制。</td></tr>
+          <tr><td><code>motor_eff_map/logic/motor_eff_logic.py</code></td><td>数据读取、列映射、清洗、归一化、包络线、插值网格、损耗和效率区域占比计算。</td></tr>
+          <tr><td><code>motor_eff_map/logic/config_values.py</code></td><td>逻辑层配置文本、正数、非负数、起始功率和等高线步长解析。</td></tr>
+          <tr><td><code>motor_eff_map/logic/interpolation.py</code></td><td>插值点有效性校验和起始转速/扭矩/功率裁剪辅助。</td></tr>
           <tr><td><code>MotorEffMAP.ini</code></td><td>用户配置文件。源码运行时放在项目根目录；编译版运行时放在 exe 同级目录。</td></tr>
           <tr><td><code>requirements.txt</code></td><td>源码运行依赖。</td></tr>
           <tr><td><code>build_script.py</code></td><td>PyInstaller 打包脚本，生成版本化目录，例如 <code>dist/MotorEffMAP_20260611-V1.2/MotorEffMAP.exe</code>，并复制运行资源。</td></tr>
@@ -359,14 +371,14 @@
 
           <rect class="box box-green" x="210" y="48" width="180" height="78"></rect>
           <text x="300" y="76" text-anchor="middle">MotorEffMAP_GUI.py</text>
-          <text x="300" y="98" text-anchor="middle">PySide6 / matplotlib</text>
+          <text x="300" y="98" text-anchor="middle">兼容入口 / GUI 包</text>
 
           <rect class="box box-orange" x="210" y="158" width="180" height="58"></rect>
           <text x="300" y="183" text-anchor="middle">MotorEffMAP.ini</text>
           <text x="300" y="203" text-anchor="middle">用户配置</text>
 
           <rect class="box box-purple" x="455" y="84" width="190" height="78"></rect>
-          <text x="550" y="112" text-anchor="middle">MotorEffMAP_Logic.py</text>
+          <text x="550" y="112" text-anchor="middle">motor_eff_map/logic</text>
           <text x="550" y="134" text-anchor="middle">清洗 / 包络线 / 插值</text>
 
           <rect class="box" x="710" y="24" width="145" height="58"></rect>
@@ -396,12 +408,12 @@
           <div class="teaching-steps">
             <div class="teaching-step"><strong><span class="step-no">1</span>入口层：用户和 GUI</strong><p>用户只接触 PySide6 界面：选择 Excel、编辑配置、点击处理、切换视图。</p><p>GUI 负责状态、日志、进度、弹窗和保存文件。</p></div>
             <div class="teaching-step"><strong><span class="step-no">2</span>接口层：INI 配置</strong><p><code>MotorEffMAP.ini</code> 是用户和程序之间的稳定接口。</p><p>GUI 写回配置，逻辑层读取列名、开关、网格和起始坐标。</p></div>
-            <div class="teaching-step"><strong><span class="step-no">3</span>核心层：逻辑和输出</strong><p><code>MotorEffMAP_Logic.py</code> 只处理 DataFrame、包络线、插值和占比。</p><p>matplotlib 和文件保存由 GUI 组织，避免逻辑层反向依赖界面。</p></div>
+            <div class="teaching-step"><strong><span class="step-no">3</span>核心层：逻辑和输出</strong><p><code>motor_eff_map/logic</code> 只处理 DataFrame、包络线、插值和占比。</p><p><code>MotorEffMAP_GUI.py</code> 与 <code>MotorEffMAP_Logic.py</code> 仅作为旧导入兼容入口保留。</p></div>
           </div>
           <p class="teaching-note">重点：新增功能时先判断属于 GUI、配置、逻辑还是输出，不能把绘图按钮逻辑塞进数据处理核心。</p>
         </div>
       </div>
-      <p>GUI 与逻辑层的边界是当前实现的核心：GUI 不直接做数值计算，逻辑层不直接操作控件。这样既便于测试，也便于将来替换界面或增加命令行入口。</p>
+      <p>当前真实实现已经拆分到 <code>motor_eff_map/gui/</code> 与 <code>motor_eff_map/logic/</code>。GUI 与逻辑层的边界是当前实现的核心：GUI 不直接做数值计算，逻辑层不直接操作控件。这样既便于测试，也便于将来替换界面或增加命令行入口。</p>
       <table>
         <thead><tr><th>模块</th><th>输入</th><th>输出</th><th>失败处理</th></tr></thead>
         <tbody>
@@ -458,12 +470,15 @@
           <p class="teaching-note">重点：每次点击“处理并保存所有”前必须读取最新 INI，否则配置页修改会和实际输出不一致。</p>
         </div>
       </div>
-      <p>处理流程由 <code>MainWindow.run_process_all()</code> 启动。程序遍历所有 Excel 文件和所有 sheet，每个 sheet 都会按同一配置完成清洗、包络线、插值、绘图和保存。</p>
+      <p>处理流程由 <code>MainWindow.run_process_all()</code> 启动。批量保存时，GUI 线程只负责读取配置快照、禁用相关按钮、创建 <code>BatchWorker</code> 并接收进度/完成/失败信号；Excel 读取、列映射、归一化、插值、PNG/XLSX 导出都在 <code>QThread</code> 后台执行。手动点击单个视图按钮仍走 GUI 的交互式绘图路径，用于查看当前数据。</p>
+      <p>后台批处理使用 <code>BatchExportContext</code> 复用现有绘图 mixin，但使用独立 <code>matplotlib.figure.Figure</code> 和 Agg canvas，不复用界面上的 QtAgg canvas，也不直接操作 <code>QMessageBox</code>、<code>QListWidget</code> 或进度条。这样单个 sheet 计算或保存耗时较长时，Qt 主事件循环仍能响应窗口消息。</p>
       <table>
         <thead><tr><th>运行时状态</th><th>所在对象</th><th>用途</th></tr></thead>
         <tbody>
           <tr><td><code>config_dict</code></td><td><code>MainWindow</code></td><td>当前运行使用的扁平化配置，批处理和手动视图入口会重新读取 INI。</td></tr>
           <tr><td><code>all_results</code></td><td><code>MainWindow</code></td><td>文件列表中每个 file + sheet 的处理条目。</td></tr>
+          <tr><td><code>BatchWorker</code></td><td>后台线程</td><td>按配置快照处理所有 file + sheet，并通过 signal 汇报进度和错误。</td></tr>
+          <tr><td><code>BatchExportContext</code></td><td>后台线程</td><td>持有独立 <code>MotorEffLogic</code>、<code>Figure</code> 和 Agg canvas，负责批量导出 PNG/XLSX。</td></tr>
           <tr><td><code>sheets_dict</code></td><td><code>MotorEffLogic</code></td><td>当前 Excel 文件的所有 sheet。</td></tr>
           <tr><td><code>processed_df</code></td><td><code>MotorEffLogic</code></td><td>清洗后的唯一计算数据源。</td></tr>
           <tr><td><code>f_edge_curve</code></td><td><code>MotorEffLogic</code></td><td>外特性包络线函数，用于限制网格几何区域。</td></tr>
@@ -513,16 +528,25 @@
           <tr><td><code>U_dc</code></td><td>Excel 中母线电压列名。</td><td><code>Udc4</code></td></tr>
           <tr><td><code>customUdc</code></td><td>固定电压值。填写后优先使用该值。</td><td><code>530</code></td></tr>
           <tr><td><code>MCUMAP</code> / <code>MotorMAP</code> / <code>SYSMAP</code></td><td>是否输出对应效率 MAP，<code>1</code> 输出，<code>0</code> 不输出。</td><td><code>1</code></td></tr>
+          <tr><td><code>MCUAreaRatioCalculation</code> / <code>MotorAreaRatioCalculation</code> / <code>SYSAreaRatioCalculation</code></td><td>是否计算对应效率区域占比。</td><td><code>1</code></td></tr>
+          <tr><td><code>SpeedPowerMAP</code></td><td>是否输出转速-功率-效率 MAP。</td><td><code>1</code></td></tr>
+          <tr><td><code>LossMAP</code></td><td>是否输出转速-扭矩-损耗 MAP。</td><td><code>1</code></td></tr>
+          <tr><td><code>ExternalCharacteristicPlot</code></td><td>是否输出外特性曲线图。</td><td><code>1</code></td></tr>
           <tr><td><code>EffMAPStep</code></td><td>效率等高线和占比阈值，支持逗号、分号或空格分隔。</td><td><code>80,85,90,95,99</code></td></tr>
           <tr><td><code>PowerMAPStep</code></td><td>功率等高线值。</td><td><code>5,10,15,20</code></td></tr>
-          <tr><td><code>xstep</code> / <code>ystep</code></td><td>转速轴、扭矩轴刻度间隔。</td><td><code>500</code> / <code>20</code></td></tr>
-          <tr><td><code>StartSpeed</code> / <code>StartTorque</code></td><td>效率区域统计起始边界。</td><td><code>0</code> / <code>0</code></td></tr>
+          <tr><td><code>LossMAPStep</code></td><td>损耗等高线值，单位 W；留空时自动生成。</td><td><code>500,1000,1500</code></td></tr>
+          <tr><td><code>xstepSpeed</code></td><td>转速轴刻度间隔，单位 rpm。</td><td><code>500</code></td></tr>
+          <tr><td><code>ystepTorque</code></td><td>扭矩轴刻度间隔，单位 N.m。</td><td><code>20</code></td></tr>
+          <tr><td><code>ystepPower</code></td><td>功率轴刻度间隔，单位 kW。</td><td><code>10</code></td></tr>
+          <tr><td><code>StartSpeed</code> / <code>StartTorque</code></td><td>转速-扭矩效率 MAP、损耗 MAP 和占比分母的起始边界。</td><td><code>0</code> / <code>0</code></td></tr>
+          <tr><td><code>StartPower</code></td><td>转速-功率-效率 MAP 的起始功率，单位 kW；留空时按 <code>StartSpeed * StartTorque / 9550</code> 自动换算。</td><td>空</td></tr>
           <tr><td><code>SpeedGrid</code> / <code>TorqueGrid</code></td><td>插值网格步长，必须大于 0。</td><td><code>5</code> / <code>0.5</code></td></tr>
           <tr><td><code>MaxGridPoints</code></td><td>最大网格点数安全上限，限制网格行数乘以网格列数，防止步长过小导致内存过大。</td><td><code>5000000</code></td></tr>
           <tr><td><code>customSpeedDirection</code></td><td>自定义转向名称。留空时由转速均值自动判断；填写后覆盖自动判断结果。</td><td><code>正转</code></td></tr>
           <tr><td><code>customMotionState</code></td><td>自定义工况状态。留空时由功率均值自动判断；填写后覆盖自动判断结果。</td><td><code>驱动</code></td></tr>
         </tbody>
       </table>
+      <p>坐标刻度按物理量拆分：转速-扭矩效率 MAP 和损耗 MAP 使用 <code>xstepSpeed</code> / <code>ystepTorque</code>，转速-功率-效率 MAP 使用 <code>xstepSpeed</code> / <code>ystepPower</code>，外特性图横轴使用 <code>xstepSpeed</code>。</p>
     </section>
 
     <section id="excel">
@@ -682,7 +706,8 @@
       </div>
 
       <h3>8.5 网格和插值</h3>
-      <p>转速轴从 0 到最大转速按 <code>SpeedGrid</code> 生成。扭矩轴按每个转速列独立生成，从 0 到外特性包络线扭矩，再通过 <code>griddata(..., method='linear')</code> 插值效率和功率。</p>
+      <p><code>process_map_data(eff_type)</code> 生成用于绘图和统计的二维网格。转速轴从 0 到最大转速按 <code>SpeedGrid</code> 生成。扭矩轴按每个转速列独立生成，从 0 到外特性包络线扭矩，再通过 <code>griddata(..., method='linear')</code> 插值效率和功率。</p>
+      <p>转速-扭矩效率 MAP 使用 <code>StartSpeed</code> 和 <code>StartTorque</code> 生成截止掩码；被截止的效率和功率会设为 NaN。转速-功率-效率 MAP 会在此基础上把扭矩坐标换算为功率坐标，并额外使用 <code>StartPower</code> 裁剪低功率区域；<code>StartPower</code> 留空时由 <code>StartSpeed * StartTorque / 9550</code> 换算得到。</p>
       <pre><code>XI, YI, ZI_Power, ZI_Eff, mask_valid_geo = process_map_data("Eff_MCU")</code></pre>
       <div class="diagram">
         <svg width="1040" height="300" viewBox="0 0 1040 300" role="img" aria-label="非矩形网格生成原理图">
@@ -692,7 +717,7 @@
           <rect class="box" x="435" y="118" width="160" height="58"></rect><text x="515" y="143" text-anchor="middle">0 到最大扭矩</text><text x="515" y="163" text-anchor="middle">按 TorqueGrid 填充</text>
           <rect class="box" x="640" y="118" width="150" height="58"></rect><text x="715" y="143" text-anchor="middle">短列补 NaN</text><text x="715" y="163" text-anchor="middle">统一矩阵形状</text>
           <rect class="box box-green" x="835" y="64" width="160" height="58"></rect><text x="915" y="89" text-anchor="middle">griddata</text><text x="915" y="109" text-anchor="middle">效率 / 功率插值</text>
-          <rect class="box box-orange" x="835" y="174" width="160" height="58"></rect><text x="915" y="199" text-anchor="middle">StartSpeed/Torque</text><text x="915" y="219" text-anchor="middle">截止区域</text>
+          <rect class="box box-orange" x="835" y="174" width="160" height="58"></rect><text x="915" y="199" text-anchor="middle">StartSpeed/Torque</text><text x="915" y="219" text-anchor="middle">StartPower 截止</text>
           <path class="arrow" marker-end="url(#arrow7)" d="M185 147 H230"></path>
           <path class="arrow" marker-end="url(#arrow7)" d="M390 147 H435"></path>
           <path class="arrow" marker-end="url(#arrow7)" d="M595 147 H640"></path>
@@ -886,6 +911,13 @@
           <p class="teaching-note">重点：如果设置 <code>StartSpeed=50</code>、<code>StartTorque=5</code>，图形起点和占比分母都会从这个坐标开始。</p>
         </div>
       </div>
+      <p>转速-功率-效率 MAP 的横轴仍使用 <code>StartSpeed</code>，纵轴使用 <code>StartPower</code>。如果 <code>StartPower</code> 留空，程序按 <code>StartSpeed * StartTorque / 9550</code> 自动换算；如果填写了 <code>StartPower</code>，则优先使用填写值。这使功率图可以独立控制低功率区域，而不强制复用扭矩图的纵轴下限。</p>
+      <ol>
+        <li>生成转速-扭矩截止掩码：<code>cutoff_mask = (XI &lt; StartSpeed) | (YI &lt; StartTorque)</code>，低转速或低扭矩任一条件命中都截止。</li>
+        <li>转速-功率图额外生成低功率截止：<code>YI_Power &lt; StartPower</code> 的区域不显示，也不计入对应几何区域。</li>
+        <li>同步调整分母：<code>mask_valid_geo = 包络线内 &amp; ~cutoff_mask</code>，占比只按保留区域统计。</li>
+      </ol>
+      <p>重点：<code>StartTorque</code> 面向扭矩坐标图，<code>StartPower</code> 面向功率坐标图；二者不能互相替代。</p>
 
       <h3>8.8 边界情况</h3>
       <table>
@@ -911,7 +943,7 @@
           <tr><td>图像比例</td><td>约 25cm x 20cm，对应 <code>9.84 x 7.87</code> 英寸。</td></tr>
           <tr><td>GUI 显示容器</td><td>使用与导出图一致的长宽比例。</td></tr>
           <tr><td>边距</td><td>通过 <code>apply_figure_layout()</code> 统一设置。</td></tr>
-          <tr><td>坐标起点</td><td>从 <code>StartSpeed</code> / <code>StartTorque</code> 开始显示。</td></tr>
+          <tr><td>坐标起点</td><td>转速-扭矩效率 MAP 和损耗 MAP 从 <code>StartSpeed</code> / <code>StartTorque</code> 开始；转速-功率-效率 MAP 从 <code>StartSpeed</code> / <code>StartPower</code> 开始。</td></tr>
           <tr><td>保存 DPI</td><td><code>200</code>。</td></tr>
         </tbody>
       </table>
@@ -946,6 +978,18 @@
           <p class="teaching-note">重点：界面图和保存图必须共享长宽比与边距，否则会出现“保存正常、界面变形”的问题。</p>
         </div>
       </div>
+      <h3>9.2 转速-功率、损耗和外特性图</h3>
+      <p>除普通转速-扭矩效率 MAP 外，当前 GUI 还按图类型拆分了三个专用绘图入口：</p>
+      <table>
+        <thead><tr><th>图类型</th><th>绘图入口</th><th>坐标与配置口径</th></tr></thead>
+        <tbody>
+          <tr><td>转速-功率-效率 MAP</td><td><code>show_speed_power_efficiency_plot()</code></td><td>X 轴为转速，Y 轴为功率；刻度使用 <code>xstepSpeed</code> / <code>ystepPower</code>，显示起点使用 <code>StartSpeed</code> / <code>StartPower</code>。</td></tr>
+          <tr><td>转速-扭矩-损耗 MAP</td><td><code>show_loss_map_plot()</code></td><td>X 轴为转速，Y 轴为扭矩；刻度使用 <code>xstepSpeed</code> / <code>ystepTorque</code>，显示起点使用 <code>StartSpeed</code> / <code>StartTorque</code>。</td></tr>
+          <tr><td>外特性曲线图</td><td><code>show_external_characteristics_plot()</code></td><td>X 轴为转速，左 Y 轴为扭矩，右 Y 轴为功率；横轴刻度使用 <code>xstepSpeed</code>，双纵轴使用专用右边距。</td></tr>
+        </tbody>
+      </table>
+      <p>损耗 MAP 的损耗值来自 <code>P_Motor(kW) * 1000 * (100 / 效率% - 1)</code>，效率为 0、空值或大于等于 100 时损耗保持 NaN。转速-功率-效率 MAP 由转速-扭矩效率网格换算功率坐标，不使用最近邻补齐原效率 MAP 中没有可靠值的区域。</p>
+      <h3>9.3 效率区域占比图</h3>
       <p><code>process_area_ratios()</code> 会保存效率区域占比 Excel 和占比 PNG。占比图中 MCU 使用蓝色星标线，电机使用绿色圆点线，系统使用洋红色加号线。</p>
       <p>占比图的保存和显示共用 <code>_plot_ratio_on_axes()</code>，数据来源共用 <code>_collect_ratio_data()</code>。因此手动点击“效率占比”和批处理保存 PNG 使用同一套开关判断、同一套比例、同一套曲线样式。</p>
     </section>
@@ -958,21 +1002,24 @@
         <p class="teaching-question">输出名要同时满足“用户能识别来源”和“公开文档不泄露真实项目”。程序会从当前文件、sheet 和运行状态拼出稳定的匿名化结果名。</p>
         <div class="teaching-steps">
           <div class="teaching-step"><strong><span class="step-no">1</span>来源字段</strong><p>源 Excel 名称和 sheet 名称标识数据来源。</p><p><code>VehicleCode</code>、平均电压、转向和工况标识测试条件。</p></div>
-          <div class="teaching-step"><strong><span class="step-no">2</span>输出类型</strong><p>MAP 图追加 <code>MCU/Motor/System EfficiencyMAP</code>。</p><p>占比结果追加 <code>效率占比.xlsx/png</code>。</p></div>
+          <div class="teaching-step"><strong><span class="step-no">2</span>输出类型</strong><p>效率图追加 <code>MCU/Motor/System EfficiencyMAP</code>，转速-功率图追加 <code>控制器/电机/系统 SpeedPowerEfficiencyMAP</code>。</p><p>损耗图追加 <code>控制器/电机/系统 LossMAP</code>，外特性图追加 <code>外特性曲线</code>，占比结果追加 <code>效率占比.xlsx/png</code>。</p></div>
           <div class="teaching-step"><strong><span class="step-no">3</span>文件名清理</strong><p>保留中文、字母、数字、下划线、点和短横线。</p><p>其它字符替换为下划线，连续下划线折叠。</p></div>
         </div>
-        <p class="teaching-note">重点：README 和 docs 只能写匿名示例，例如“示例数据”和“车型A”，不能出现真实文件名、项目代号或电压平台。</p>
+        <p class="teaching-note">重点：README 和 docs 正文中的说明性示例应使用匿名名称，例如“示例数据”和“车型A”；仓库 <code>example/</code> 中实际存在的示例资产可以按真实文件名引用，但不得混入未公开的项目代号或电压平台。</p>
       </div>
       <pre><code>示例数据_Sheet1_车型A-500V-正转驱动_MCUEfficiencyMAP.png
+示例数据_Sheet1_车型A-500V-正转驱动_控制器SpeedPowerEfficiencyMAP.png
+示例数据_Sheet1_车型A-500V-正转驱动_控制器LossMAP.png
+示例数据_Sheet1_车型A-500V-正转驱动_外特性曲线.png
 示例数据_Sheet1_车型A-500V-正转驱动_效率占比.xlsx
 示例数据_Sheet1_车型A-500V-正转驱动_效率占比.png</code></pre>
-      <p>文件名会保留中文、字母、数字、下划线、点和短横线，其他字符替换为下划线。</p>
+      <p>文件名会保留中文、字母、数字、下划线、点和短横线，其他字符替换为下划线。输出类型中，效率图追加 <code>MCU/Motor/System EfficiencyMAP</code>，转速-功率图追加 <code>控制器/电机/系统 SpeedPowerEfficiencyMAP</code>，损耗图追加 <code>控制器/电机/系统 LossMAP</code>，外特性图追加 <code>外特性曲线</code>，占比结果追加 <code>效率占比.xlsx/png</code>。</p>
     </section>
 
     <section id="build">
       <h2>11. 编译版实现</h2>
       <p>打包入口是 <code>build_exe.bat</code> 和 <code>build_script.py</code>。脚本会强制使用项目虚拟环境 <code>venv\Scripts\python.exe</code>，避免全局 Python 环境把无关大型库收进发布包。</p>
-      <pre><code>python -m PyInstaller --noconfirm --onedir --windowed --name MotorEffMAP --clean run.py</code></pre>
+      <pre><code>python -m PyInstaller --noconfirm --onedir --windowed --name MotorEffMAP --clean --hidden-import=openpyxl --hidden-import=xlrd run.py</code></pre>
       <div class="diagram">
         <svg width="1040" height="250" viewBox="0 0 1040 250" role="img" aria-label="打包流程图">
           <defs><marker id="arrow10" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L9,3 z" fill="#64748b"></path></marker></defs>
@@ -1043,9 +1090,9 @@
       <table>
         <thead><tr><th>修改类型</th><th>必查文件</th><th>必跑验证</th></tr></thead>
         <tbody>
-          <tr><td>新增或删除配置项</td><td><code>MotorEffMAP.ini</code>、<code>MotorEffMAP_GUI.py</code>、README、本文档</td><td>配置页保存、<code>git diff --check</code></td></tr>
-          <tr><td>修改数据清洗或插值</td><td><code>MotorEffMAP_Logic.py</code>、测试、本文档第 8 章</td><td>单元测试、目标 Excel 回归样本</td></tr>
-          <tr><td>修改图形版式</td><td><code>MotorEffMAP_GUI.py</code>、本文档第 9 章</td><td>GUI 显示比例、保存 PNG 比例</td></tr>
+          <tr><td>新增或删除配置项</td><td><code>MotorEffMAP.ini</code>、<code>motor_eff_map/gui/config_editor.py</code>、README、本文档</td><td>配置页保存、<code>git diff --check</code></td></tr>
+          <tr><td>修改数据清洗或插值</td><td><code>motor_eff_map/logic/</code>、测试、本文档第 8 章</td><td>单元测试、目标 Excel 回归样本</td></tr>
+          <tr><td>修改图形版式</td><td><code>motor_eff_map/gui/main_window.py</code>、<code>motor_eff_map/gui/plot_helpers.py</code>、本文档第 9 章</td><td>GUI 显示比例、保存 PNG 比例</td></tr>
           <tr><td>修改打包流程</td><td><code>build_script.py</code>、<code>build_exe.bat</code>、README、本文档第 11 章</td><td>构建、exe 启动烟测、体积统计</td></tr>
           <tr><td>修改输出命名</td><td><code>build_output_stem()</code>、README、本文档第 10 章</td><td>文件名匿名示例检查、非法字符测试</td></tr>
         </tbody>

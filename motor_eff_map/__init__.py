@@ -1,0 +1,2 @@
+"""MotorEffMAP application package."""
+
